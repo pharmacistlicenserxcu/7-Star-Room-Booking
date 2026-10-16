@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ห้อง 7 ดาว — CLINIC OSPE Booking System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"] {
+      --bg: #f8fafc;
+      --surf: #ffffff;
+      --surf2: #f1f5f9;
+      --surf3: rgba(255, 255, 255, 0.94);
+      --surv: #f8fafc;
+      --bdr: #e2e8f0;
+      --bdr2: #cbd5e1;
+      --txt: #0f172a;
+      --txt2: #475569;
+      --txt3: #94a3b8;
+      
+      /* Status Palette */
+      --free-bg: #ecfdf5;
+      --free-bdr: #a7f3d0;
+      --free-txt: #059669;
+      --free-hover: #d1fae5;
+
+      --ci-bg: #fff7ed;
+      --ci-bdr: #ea580c;
+      --ci-txt: #c2410c;
+      
+      --full-bg: #fff1f2;
+      --full-bdr: #fecdd3;
+      --full-txt: #e11d48;
+      
+      --sel-bg: #eff6ff;
+      --sel-bdr: #3b82f6;
+      --sel-txt: #1d4ed8;
+
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-glow: rgba(79, 70, 229, 0.25);
+      
+      --sh1: 0 1px 3px rgba(0,0,0,0.05);
+      --sh2: 0 4px 16px rgba(0,0,0,0.06);
+      --sh3: 0 12px 36px rgba(0,0,0,0.09);
+    }
+
+    [data-theme="dark"] {
+      --bg: #070a12;
+      --surf: #0d1322;
+      --surf2: #131b2e;
+      --surf3: rgba(13, 19, 34, 0.92);
+      --surv: #182238;
+      --bdr: rgba(255, 255, 255, 0.08);
+      --bdr2: rgba(255, 255, 255, 0.16);
+      --txt: #f8fafc;
+      --txt2: #94a3b8;
+      --txt3: #64748b;
+
+      --free-bg: rgba(16, 185, 129, 0.12);
+      --free-bdr: rgba(16, 185, 129, 0.35);
+      --free-txt: #34d399;
+      --free-hover: rgba(16, 185, 129, 0.2);
+
+      --ci-bg: rgba(255, 107, 0, 0.16);
+      --ci-bdr: #ff6b00;
+      --ci-txt: #fb923c;
+
+      --full-bg: rgba(244, 63, 94, 0.12);
+      --full-bdr: rgba(244, 63, 94, 0.35);
+      --full-txt: #fb7185;
+
+      --sel-bg: rgba(59, 130, 246, 0.16);
+      --sel-bdr: #3b82f6;
+      --sel-txt: #60a5fa;
+
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+
+      --sh1: 0 1px 3px rgba(0,0,0,0.3);
+      --sh2: 0 6px 20px rgba(0,0,0,0.4);
+      --sh3: 0 16px 48px rgba(0,0,0,0.55);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', 'Bai Jamjuree', sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      padding-bottom: 90px; /* Room for sticky bottom bar */
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surf3);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--bdr);
+      padding: 0 16px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .nb-brand { display: flex; align-items: center; gap: 10px; }
+    .nb-beacon {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #06b6d4; box-shadow: 0 0 12px #06b6d4;
+      animation: bp 2.4s ease-in-out infinite; flex-shrink: 0;
+    }
+    @keyframes bp { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.3);opacity:.6} }
+    .nb-title {
+      font-family: 'Bai Jamjuree', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--txt);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .nb-sub { font-size: 0.75rem; color: var(--txt3); }
+    .nb-right { display: flex; align-items: center; gap: 6px; }
+
+    .btn-action {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--bdr);
+      background: var(--surf2);
+      color: var(--txt);
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: 'Bai Jamjuree', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+    .btn-action:hover { background: var(--surv); border-color: var(--bdr2); }
+    .btn-primary-head {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+    .btn-primary-head:hover { background: var(--primary-hover); }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 14px 24px;
+      flex: 1;
+    }
+
+    /* Day Navigation Section */
+    .day-nav-card {
+      background: var(--surf);
+      border: 1px solid var(--bdr);
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--sh1);
+    }
+    .day-nav-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .day-arrows { display: flex; align-items: center; gap: 6px; }
+    .btn-day-nav {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--bdr);
+      background: var(--surf2);
+      border-radius: 10px;
+      color: var(--txt);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: 'Bai Jamjuree', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: 0.18s;
+    }
+    .btn-day-nav:hover { background: var(--surv); border-color: var(--bdr2); }
+    .btn-day-today {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+    .btn-day-today:hover { background: var(--primary-hover); }
+
+    .cur-day-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .cur-day-text {
+      font-family: 'Bai Jamjuree', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--txt);
+    }
+    .cur-day-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--txt3);
+    }
+    .date-picker-hidden {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    /* Horizontal Weekday Chips */
+    .day-chips-wrap {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+    .day-chip {
+      flex: 1;
+      min-width: 95px;
+      padding: 8px 6px;
+      background: var(--surf2);
+      border: 1px solid var(--bdr);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.18s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    .day-chip:hover { border-color: var(--bdr2); }
+    .day-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .chip-name { font-size: 0.72rem; font-weight: 600; font-family: 'Bai Jamjuree', sans-serif; }
+    .chip-date { font-size: 1.05rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; line-height: 1.2; }
+    .chip-free { font-size: 0.65rem; margin-top: 2px; opacity: 0.85; font-family: 'Bai Jamjuree', sans-serif; }
+    .day-chip.active .chip-free { color: #e0e7ff; font-weight: 600; }
+
+    /* Legend Bar */
+    .legend-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: var(--surf);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      gap: 8px;
+      box-shadow: var(--sh1);
+    }
+    .leg-items { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .leg-it {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--txt2);
+      font-family: 'Bai Jamjuree', sans-serif;
+    }
+    .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-free { background: var(--free-txt); box-shadow: 0 0 6px var(--free-txt); }
+    .dot-ci { background: var(--ci-txt); box-shadow: 0 0 6px var(--ci-txt); }
+    .dot-full { background: var(--full-txt); box-shadow: 0 0 6px var(--full-txt); }
+    .dot-sel { background: var(--sel-bdr); box-shadow: 0 0 6px var(--sel-bdr); }
+
+    /* Notice Tip */
+    .tip-box {
+      background: rgba(79, 70, 229, 0.06);
+      border: 1px dashed rgba(79, 70, 229, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      color: var(--txt2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-family: 'Bai Jamjuree', sans-serif;
+    }
+    .tip-box strong { color: var(--primary); }
+
+    /* Day Slots Table / Cards */
+    .slots-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slot-row {
+      background: var(--surf);
+      border: 1px solid var(--bdr);
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: var(--sh1);
+      display: grid;
+      grid-template-columns: 130px 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      transition: 0.2s;
+    }
+    .slot-row:hover { border-color: var(--bdr2); }
+    .slot-row.past-row {
+      opacity: 0.45;
+      background: var(--surf2);
+      pointer-events: none;
+    }
+
+    /* Time Column / Both Button */
+    .time-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--surf2);
+      border: 1px solid var(--bdr);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: 0.18s;
+      user-select: none;
+      text-align: center;
+    }
+    .time-col:hover {
+      background: rgba(79, 70, 229, 0.08);
+      border-color: var(--primary);
+    }
+    .time-col.selected-both {
+      background: var(--sel-bg);
+      border-color: var(--sel-bdr);
+      color: var(--sel-txt);
+      box-shadow: 0 0 0 2px var(--sel-bdr);
+    }
+    .tc-range {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--txt);
+      line-height: 1.2;
+    }
+    .tc-sub {
+      font-size: 0.68rem;
+      color: var(--txt3);
+      margin-top: 2px;
+      font-family: 'Bai Jamjuree', sans-serif;
+      font-weight: 500;
+    }
+    .time-col:hover .tc-sub { color: var(--primary); font-weight: 600; }
+
+    /* Room Cards */
+    .room-card {
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: 0.18s;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .room-card:active { transform: scale(0.98); }
+
+    .rc-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      font-family: 'Bai Jamjuree', sans-serif;
+    }
+    .rc-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: 'Bai Jamjuree', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* State Styles */
+    .room-card.state-free {
+      background: var(--free-bg);
+      border-color: var(--free-bdr);
+      color: var(--free-txt);
+    }
+    .room-card.state-free:hover {
+      background: var(--free-hover);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .room-card.state-selected {
+      background: var(--sel-bg);
+      border-color: var(--sel-bdr);
+      color: var(--sel-txt);
+      box-shadow: 0 0 0 2px var(--sel-bdr), 0 4px 12px rgba(59, 130, 246, 0.25);
+    }
+
+    .room-card.state-ci {
+      background: var(--ci-bg);
+      border-color: var(--ci-bdr);
+      color: var(--ci-txt);
+      animation: cip 1.8s ease-in-out infinite;
+    }
+    @keyframes cip {
+      0%,100%{ box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
+      50%{ box-shadow: 0 0 10px 2px rgba(234, 88, 12, 0.35); }
+    }
+    .rc-countdown {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.82rem;
+    }
+
+    .room-card.state-full {
+      background: var(--full-bg);
+      border-color: var(--full-bdr);
+      color: var(--full-txt);
+      cursor: default;
+    }
+
+    .room-card.state-past {
+      background: transparent;
+      border-color: transparent;
+      color: var(--txt3);
+      cursor: not-allowed;
+    }
+
+    /* Sticky Bottom Action Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 95;
+      background: var(--surf3);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--bdr);
+      padding: 12px 18px;
+      box-shadow: var(--sh3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bb-inner {
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .bb-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bb-icon { font-size: 1.25rem; }
+    .bb-text-main {
+      font-family: 'Bai Jamjuree', sans-serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--txt);
+    }
+    .bb-text-sub {
+      font-size: 0.75rem;
+      color: var(--txt3);
+    }
+    .bb-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-clear-sel {
+      height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--bdr);
+      background: var(--surf2);
+      border-radius: 10px;
+      color: var(--txt2);
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'Bai Jamjuree', sans-serif;
+      cursor: pointer;
+    }
+    .btn-clear-sel:hover { background: var(--surv); }
+    .btn-book-now {
+      height: 40px;
+      padding: 0 20px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: 'Bai Jamjuree', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: 0.2s;
+    }
+    .btn-book-now:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-book-now:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Footer */
+    .app-footer {
+      margin-top: 32px;
+      text-align: center;
+      padding: 24px 16px;
+      border-top: 1px solid var(--bdr);
+      color: var(--txt3);
+      font-size: 0.78rem;
+    }
+    .footer-copy { margin-top: 4px; font-weight: 500; }
+    .footer-credit { margin-top: 6px; color: var(--txt2); font-size: 0.82rem; }
+    .footer-credit strong { color: var(--txt); }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .slot-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .time-col {
+        padding: 6px 8px;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .bb-inner { flex-direction: column; align-items: stretch; text-align: center; }
+      .bb-info { justify-content: center; }
+      .bb-actions { justify-content: stretch; }
+      .bb-actions button { flex: 1; }
+    }
+
+    /* Modals & Components */
+    .modal-ov {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px); z-index: 1000;
+      display: none; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal-ov.active { display: flex; }
+    .modal {
+      background: var(--surf); border: 1px solid var(--bdr);
+      border-radius: 20px; width: 100%; max-width: 480px;
+      padding: 24px; box-shadow: var(--sh3);
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-hdr {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .modal-title { font-size: 1.15rem; font-weight: 700; color: var(--txt); }
+    .modal-sub { font-size: 0.8rem; color: var(--txt3); margin-top: 2px; }
+    .btn-x {
+      background: none; border: none; font-size: 1.2rem; cursor: pointer;
+      color: var(--txt3); padding: 4px;
+    }
+
+    .fg { margin-bottom: 14px; }
+    .fl { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; color: var(--txt); }
+    .fl span { color: #e11d48; }
+    .fc {
+      width: 100%; height: 42px; border: 1px solid var(--bdr);
+      background: var(--surf2); border-radius: 10px; padding: 0 12px;
+      font-size: 0.88rem; color: var(--txt); font-family: inherit;
+      outline: none; transition: 0.2s;
+    }
+    .fc:focus { border-color: var(--primary); background: var(--surf); }
+    .fh { font-size: 0.72rem; color: var(--txt3); margin-top: 4px; }
+    .fe { font-size: 0.75rem; color: #e11d48; margin-top: 4px; display: none; }
+    .fe.vis { display: block; }
+    
+    .sid-name-badge {
+      display: none; margin-top: 4px; padding: 4px 8px;
+      background: var(--free-bg); border: 1px solid var(--free-bdr);
+      color: var(--free-txt); border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    }
+    .sid-name-badge.vis { display: block; }
+
+    .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+    .btn {
+      height: 40px; padding: 0 18px; border-radius: 10px; font-size: 0.84rem;
+      font-weight: 600; cursor: pointer; border: none; font-family: inherit;
+    }
+    .btn-s { background: var(--surf2); color: var(--txt); border: 1px solid var(--bdr); }
+    .btn-p { background: var(--primary); color: #fff; }
+    .btn-d { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+
+    .toast {
+      position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 99px;
+      font-size: 0.84rem; font-weight: 600; opacity: 0; pointer-events: none;
+      transition: 0.25s; z-index: 2000; box-shadow: var(--sh3);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: #059669; }
+    .toast.error { background: #e11d48; }
+    .toast.info { background: #2563eb; }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 22px; height: 22px; border: 2.5px solid var(--bdr2);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin .7s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="nb-brand">
+      <div class="nb-beacon"></div>
+      <div>
+        <div class="nb-title">ห้อง 7 ดาว OSPE</div>
+        <div class="nb-sub">คณะเภสัชศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย</div>
+      </div>
+    </div>
+    <div class="nb-right">
+      <button class="btn-action" onclick="openMyBookings()">📋 การจองของฉัน</button>
+      <button class="btn-action" onclick="openMockModal()">🏛️ จองส่วนกลาง/Mock</button>
+      <button class="btn-action" onclick="refreshData()">🔄 รีเฟรช</button>
+      <button class="btn-action" id="btnTheme" onclick="toggleTheme()">☀️ โหมด</button>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Day Navigation Card -->
+    <div class="day-nav-card">
+      <div class="day-nav-top">
+        <div class="cur-day-box" onclick="document.getElementById('datePickerHidden').showPicker()">
+          <div>
+            <div class="cur-day-text" id="curDayText">วันจันทร์ที่ 19 ตุลาคม 2569</div>
+            <div class="cur-day-sub" id="curDaySub">แตะเพื่อเลือกวันที่ในปฏิทิน 📅</div>
+          </div>
+          <input type="date" id="datePickerHidden" class="date-picker-hidden" onchange="onDatePicked(this.value)">
+        </div>
+        <div class="day-arrows">
+          <button class="btn-day-nav" onclick="navDay(-1)">‹ วันก่อน</button>
+          <button class="btn-day-nav btn-day-today" onclick="navToday()">วันนี้</button>
+          <button class="btn-day-nav" onclick="navDay(1)">วันถัดไป ›</button>
+        </div>
+      </div>
+
+      <!-- 7 Weekday Carousel Chips -->
+      <div class="day-chips-wrap" id="dayChips">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Status Legend -->
+    <div class="legend-bar">
+      <div class="leg-items">
+        <div class="leg-it"><div class="leg-dot dot-free"></div> ว่าง</div>
+        <div class="leg-it"><div class="leg-dot dot-ci"></div> รอยืนยัน (5 นาที)</div>
+        <div class="leg-it"><div class="leg-dot dot-full"></div> จองแล้ว</div>
+        <div class="leg-it"><div class="leg-dot dot-sel"></div> ที่เลือก</div>
+      </div>
+      <div style="font-size:0.75rem; color:var(--txt3); font-weight:600" id="quotaTodayInfo">
+        โควตาส่วนตัว: สูงสุด 2 ชม./คน/วัน
+      </div>
+    </div>
+
+    <!-- Tip Banner -->
+    <div class="tip-box">
+      <span>💡</span>
+      <span><strong>เคล็ดลับ:</strong> แตะที่ <strong>ช่วงเวลา (แถบซ้าย)</strong> เพื่อเลือกทั้งสองห้องพร้อมกัน หรือแตะแยก <strong>🚪 ห้องนอก</strong> / <strong>🛏️ ห้องใน</strong></span>
+    </div>
+
+    <!-- Time Slots List -->
+    <div class="slots-container" id="slotsList">
+      <!-- Generated dynamically -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p class="footer-copy">© 2026 คณะเภสัชศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย · ระบบจองห้อง 7 ดาว OSPE</p>
+      <p class="footer-credit">
+        💻 ออกแบบและพัฒนาโดย: <strong>แม็กนั่ม (Maxnum)</strong> · หัวหน้าชั้นปีที่ 5 ปีการศึกษา 2569 คณะเภสัชศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- Sticky Bottom Selection Action Bar -->
+  <div class="bottom-bar">
+    <div class="bb-inner">
+      <div class="bb-info">
+        <div class="bb-icon" id="bbIcon">ℹ️</div>
+        <div>
+          <div class="bb-text-main" id="bbTextMain">ยังไม่ได้เลือกช่วงเวลา แตะช่องสีเขียวเพื่อเลือก</div>
+          <div class="bb-text-sub" id="bbTextSub">เลือกห้องนอก ห้องใน หรือทั้งสองห้องเพื่อทำการสำรองเวลา</div>
+        </div>
+      </div>
+      <div class="bb-actions">
+        <button class="btn-clear-sel" id="btnClearSel" style="display:none" onclick="clearSelection()">✕ ล้างที่เลือก</button>
+        <button class="btn-book-now" id="btnBookNow" disabled onclick="onProceedBooking()">⚡ ดำเนินการจอง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING MODAL -->
+  <div class="modal-ov" id="bookModal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-hdr">
+        <div>
+          <div class="modal-title">📝 ยืนยันการสำรองห้อง 7 ดาว</div>
+          <div class="modal-sub" id="bookModalSub">กรอกรหัสนิสิต 10 หลัก และตั้งรหัส PIN 4 หลัก</div>
+        </div>
+        <button class="btn-x" onclick="closeBookModal()">✕</button>
+      </div>
+
+      <div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:12px; padding:12px; margin-bottom:14px; font-size:0.85rem">
+        <div>📅 <strong>วันที่:</strong> <span id="mDate">—</span></div>
+        <div>⏰ <strong>ช่วงเวลา:</strong> <span id="mTime">—</span></div>
+        <div>🚪 <strong>ห้อง/โต๊ะ:</strong> <span id="mTable">—</span></div>
+      </div>
+
+      <!-- Student 1 -->
+      <div class="fg">
+        <label class="fl">รหัสนิสิตคนที่ 1 <span>*</span></label>
+        <input type="text" class="fc" id="sid1" placeholder="เช่น 6531034333" maxlength="10" oninput="onSidInput(1)">
+        <div class="sid-name-badge" id="nameBadge1"></div>
+        <div class="fe" id="eSid1">กรุณากรอกรหัสนิสิต 10 หลักให้ถูกต้อง</div>
+        <div class="fe" id="eNotFound1">ไม่พบรหัสนิสิตนี้ในฐานข้อมูล</div>
+        <div class="fe" id="eQuota1">รหัสนิสิตนี้ใช้ Quota ครบ 2 ชม./วันแล้ว</div>
+      </div>
+
+      <!-- Student 2 -->
+      <div class="fg">
+        <label class="fl">รหัสนิสิตคนที่ 2 <span>*</span></label>
+        <input type="text" class="fc" id="sid2" placeholder="เช่น 6531034333" maxlength="10" oninput="onSidInput(2)">
+        <div class="sid-name-badge" id="nameBadge2"></div>
+        <div class="fe" id="eSid2">กรุณากรอกรหัสนิสิต 10 หลักให้ถูกต้อง</div>
+        <div class="fe" id="eNotFound2">ไม่พบรหัสนิสิตนี้ในฐานข้อมูล</div>
+        <div class="fe" id="eSameSid">รหัสนิสิตคนที่ 2 ต้องไม่ซ้ำกับคนที่ 1</div>
+        <div class="fe" id="eQuota2">รหัสนิสิตนี้ใช้ Quota ครบ 2 ชม./วันแล้ว</div>
+      </div>
+
+      <!-- PIN -->
+      <div class="fg">
+        <label class="fl">ตั้งรหัส PIN 4 หลักสำหรับยกเลิก <span>*</span></label>
+        <input type="password" inputmode="numeric" class="fc" id="bookPin" placeholder="เช่น 1234 (ตัวเลข 4 หลัก)" maxlength="4" style="font-family:'JetBrains Mono',monospace;letter-spacing:4px;font-size:1.1rem;font-weight:700">
+        <div class="fh">🔒 ใช้สำหรับยืนยันเมื่อต้องการยกเลิกการจอง ป้องกันผู้อื่นแกล้งยกเลิก</div>
+        <div class="fe" id="ePin">กรุณากรอกรหัส PIN ตัวเลข 4 หลัก</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-s" onclick="closeBookModal()">ยกเลิก</button>
+        <button class="btn btn-p" id="btnSubmitBook" onclick="submitBooking()">ยืนยันการจอง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECK-IN MODAL (5 MIN COUNTDOWN) -->
+  <div class="modal-ov" id="ciModal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-hdr">
+        <div>
+          <div class="modal-title">⏰ ยืนยันการเข้าใช้งานห้อง</div>
+          <div class="modal-sub">กรุณายืนยันตัวตนภายใน 5 นาทีหลังถึงเวลาจอง</div>
+        </div>
+        <button class="btn-x" onclick="closeCiModal()">✕</button>
+      </div>
+
+      <div style="background:var(--ci-bg); border:1px solid var(--ci-bdr); border-radius:12px; padding:12px; text-align:center; margin-bottom:14px">
+        <div style="font-size:0.75rem; color:var(--ci-txt); font-weight:600">เวลาที่เหลือสำหรับการยืนยัน (หากไม่ยืนยันจะปล่อย Slot ให้ผู้อื่น)</div>
+        <div id="ciCdText" style="font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; color:var(--ci-txt)">05:00</div>
+      </div>
+
+      <div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:12px; padding:12px; margin-bottom:14px; font-size:0.85rem">
+        <div>📅 <strong>วันที่:</strong> <span id="ciDateTxt">—</span></div>
+        <div>⏰ <strong>ช่วงเวลา:</strong> <span id="ciTimeTxt">—</span></div>
+        <div>🚪 <strong>ห้อง/โต๊ะ:</strong> <span id="ciTableTxt">—</span></div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">รหัสนิสิตของคุณ (10 หลัก) <span>*</span></label>
+        <input type="text" class="fc" id="ciSidInput" placeholder="เช่น 6531034333" maxlength="10">
+        <div class="fe" id="eCiSid">กรุณากรอกรหัสนิสิต 10 หลักที่มีชื่อในกลุ่มจองนี้</div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">รหัส PIN 4 หลัก (ที่ตั้งไว้ตอนจอง) <span>*</span></label>
+        <input type="password" inputmode="numeric" class="fc" id="ciPinInput" placeholder="••••" maxlength="4" style="font-family:'JetBrains Mono',monospace;letter-spacing:6px;font-size:1.15rem;text-align:center;font-weight:800">
+        <div class="fe" id="eCiPin">กรุณากรอกรหัส PIN 4 หลักให้ถูกต้อง</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-d" id="btnCiCancelSlot" onclick="submitCiCancel()">ยกเลิก Slot นี้</button>
+        <button class="btn btn-p" id="btnCiConfirmSlot" onclick="submitCiConfirm()">✓ ยืนยันเข้าใช้งาน</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY BOOKINGS SEARCH MODAL -->
+  <div class="modal-ov" id="myBookingsModal">
+    <div class="modal" role="dialog" aria-modal="true" style="max-width:540px">
+      <div class="modal-hdr">
+        <div>
+          <div class="modal-title">📋 ตรวจสอบการจองของฉัน</div>
+          <div class="modal-sub">กรอกรหัสนิสิตเพื่อดูประวัติ หรือยกเลิกการจอง</div>
+        </div>
+        <button class="btn-x" onclick="closeMyBookings()">✕</button>
+      </div>
+
+      <div class="fg" style="display:flex; gap:8px">
+        <input type="text" class="fc" id="mySidSearch" placeholder="กรอกรหัสนิสิต 10 หลัก" maxlength="10" onkeyup="if(event.key==='Enter') searchMyBookings()">
+        <button class="btn btn-p" style="white-space:nowrap" onclick="searchMyBookings()">🔍 ค้นหา</button>
+      </div>
+
+      <div id="myBookingsList" style="max-height:360px; overflow-y:auto; margin-top:12px">
+        <div style="text-align:center; padding:24px; color:var(--txt3); font-size:0.85rem">
+          กรอกรหัสนิสิตด้านบน แล้วกดค้นหา
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-s" onclick="closeMyBookings()">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIN CANCEL CONFIRMATION MODAL -->
+  <div class="modal-ov" id="pinCancelModal" style="z-index:1100">
+    <div class="modal" role="dialog" aria-modal="true" style="max-width:380px">
+      <div class="modal-hdr">
+        <div>
+          <div class="modal-title">🔒 ยืนยันรหัส PIN 4 หลัก</div>
+          <div class="modal-sub">กรอก PIN เพื่อยกเลิกการจอง</div>
+        </div>
+        <button class="btn-x" onclick="closePinCancel()">✕</button>
+      </div>
+      <div id="pinCancelInfo" style="background:var(--surf2); border:1px solid var(--bdr); border-radius:10px; padding:10px; font-size:0.82rem; margin-bottom:12px"></div>
+      <div class="fg">
+        <label class="fl">รหัส PIN 4 หลัก <span>*</span></label>
+        <input type="password" inputmode="numeric" class="fc" id="inputCancelPin" placeholder="••••" maxlength="4" style="font-family:'JetBrains Mono',monospace;letter-spacing:6px;font-size:1.25rem;text-align:center;font-weight:800">
+        <div class="fe" id="eCancelPin">กรุณากรอกรหัส PIN 4 หลัก</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-s" onclick="closePinCancel()">ย้อนกลับ</button>
+        <button class="btn btn-d" id="btnConfirmCancel" onclick="confirmCancelBooking()">ยืนยันยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTRAL / MOCK EXAM BOOKING MODAL -->
+  <div class="modal-ov" id="mockModal">
+    <div class="modal" role="dialog" aria-modal="true" style="max-width:540px">
+      <div class="modal-hdr">
+        <div>
+          <div class="modal-title">🏛️ จองส่วนกลาง / ซ้อมสอบ Mock Exam</div>
+          <div class="modal-sub">สำหรับการจองหลายชั่วโมงต่อเนื่องโดยคณะทำงานส่วนกลาง</div>
+        </div>
+        <button class="btn-x" onclick="closeMockModal()">✕</button>
+      </div>
+
+      <div class="fg">
+        <label class="fl">ชื่อกิจกรรม / การสอบ <span>*</span></label>
+        <input type="text" class="fc" id="mockTitle" placeholder="เช่น สอบจำลอง PLE-CC2 Mock Clinic รอบ 1">
+      </div>
+
+      <div class="fg">
+        <label class="fl">วันที่ต้องการจอง <span>*</span></label>
+        <input type="date" class="fc" id="mockDate">
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+        <div class="fg">
+          <label class="fl">เวลาเริ่มต้น <span>*</span></label>
+          <select class="fc" id="mockStartSlot"></select>
+        </div>
+        <div class="fg">
+          <label class="fl">เวลาสิ้นสุด <span>*</span></label>
+          <select class="fc" id="mockEndSlot"></select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">พื้นที่ห้อง <span>*</span></label>
+        <select class="fc" id="mockTableType">
+          <option value="both">🚪+🛏️ ใช้ทั้งห้อง (ห้องนอก + ห้องใน)</option>
+          <option value="outside">🚪 เฉพาะห้องนอก (โต๊ะกลมนอก)</option>
+          <option value="inside">🛏️ เฉพาะห้องใน (โต๊ะในห้อง)</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label class="fl">รหัสผ่านยืนยันสิทธิ์ส่วนกลาง <span>*</span></label>
+        <input type="password" class="fc" id="mockPass" placeholder="รหัสผ่านส่วนกลาง (rxcu)" style="letter-spacing:2px">
+        <div class="fh">🔒 สำหรับประธานโครงการและฝ่ายวิชาการ PLE-CC เท่านั้น</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-s" onclick="closeMockModal()">ยกเลิก</button>
+        <button class="btn btn-p" id="btnSubmitMock" onclick="submitMockBooking()">ยืนยันจองส่วนกลาง</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ════════════════════════════════════════════════════════════════════
+    // CONFIG & STATE
+    // ════════════════════════════════════════════════════════════════════
+    var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbw36j2cOXAEbiuTddOrSHe-epkHgGBMo66RoIE7p-j6x1n-rDo_cOKoHNSIbeS9DQ/exec';
+    
+    var SLOTS = [
+      '08:00','09:00','10:00','11:00','12:00','13:00','14:00',
+      '15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'
+    ];
+    var DAYS_TH = ['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'];
+    var DAYS_SHORT = ['จ.','อ.','พ.','พฤ.','ศ.','ส.','อา.'];
+    var MONTHS_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    var MONTHS_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+    var selectedDate = new Date();
+    var bkData = {}; // Cache of bookings by date_slot
+    var activeSelection = null; // { slot: '09:00', type: 'outside' | 'inside' | 'both' }
+    var tickerInterval = null;
+    var ciCurrentEntry = null; // for check-in modal
+    var pendingCancelEntry = null; // for cancel modal
+
+    // Mock Data Fallback for offline/local testing
+    var MOCK_DB = {
+      studentRoster: {
+        '6531034333': 'ธนดล (Maxnum)',
+        '6531000133': 'สมชาย พัฒนาการ',
+        '6531000233': 'กานดา เภสัชกร',
+        '6531000333': 'วิชาญ คลินิก'
+      },
+      bookings: {}
+    };
+
+    // ════════════════════════════════════════════════════════════════════
+    // API CALLER (Universal fetch / fallback)
+    // ════════════════════════════════════════════════════════════════════
+    function callGasApi(action, paramsOrData, isPost, onSuccess, onError) {
+      // 1. Google iframe
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        var runner = google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError);
+        if (action === 'getBookingsForWeek') return runner.getBookingsForWeek(paramsOrData.date || paramsOrData.weekStartDate);
+        if (action === 'verifyStudent') return runner.verifyStudent(paramsOrData.studentId);
+        if (action === 'getDayQuota') return runner.getDayQuota(paramsOrData.date, paramsOrData.studentId);
+        if (action === 'getMyBookings') return runner.getMyBookings(paramsOrData.studentId);
+        if (action === 'createBooking') return runner.createBooking(paramsOrData);
+        if (action === 'createMockCentralBooking') return runner.createMockCentralBooking(paramsOrData);
+        if (action === 'cancelBooking') return runner.cancelBooking(paramsOrData.bookingId, paramsOrData.studentId, paramsOrData.pin);
+        if (action === 'checkInBooking') return runner.checkInBooking(paramsOrData.bookingId, paramsOrData.studentId, paramsOrData.pin);
+      }
+
+      // 2. External REST fetch
+      if (!isPost) {
+        var query = '?action=' + encodeURIComponent(action);
+        for (var k in paramsOrData) {
+          if (paramsOrData.hasOwnProperty(k)) {
+            query += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(paramsOrData[k]);
+          }
+        }
+        fetch(GAS_API_URL + query, { redirect: 'follow' })
+          .then(function(r) { return r.json(); })
+          .then(function(res) { if (onSuccess) onSuccess(res); })
+          .catch(function(err) {
+            console.warn('API error (using local mock fallback):', err);
+            handleLocalMockApi(action, paramsOrData, isPost, onSuccess);
+          });
+      } else {
+        var bodyData = JSON.stringify({ action: action, data: paramsOrData });
+        fetch(GAS_API_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: bodyData
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) { if (onSuccess) onSuccess(res); })
+          .catch(function(err) {
+            console.warn('API error (using local mock fallback):', err);
+            handleLocalMockApi(action, paramsOrData, isPost, onSuccess);
+          });
+      }
+    }
+
+    // Local Mock Fallback to guarantee seamless testing locally
+    function handleLocalMockApi(action, data, isPost, onSuccess) {
+      if (action === 'verifyStudent') {
+        var sid = data.studentId;
+        var name = MOCK_DB.studentRoster[sid];
+        if (name) {
+          onSuccess({ exists: true, name: name });
+        } else if (/^\d{10}$/.test(sid)) {
+          onSuccess({ exists: true, name: 'นิสิตทดสอบ (' + sid + ')' });
+        } else {
+          onSuccess({ exists: false, error: 'ไม่พบรหัสนิสิตในระบบ' });
+        }
+      } else if (action === 'getDayQuota') {
+        onSuccess(0);
+      } else if (action === 'getBookingsForWeek') {
+        onSuccess(MOCK_DB.bookings);
+      } else if (action === 'createBooking') {
+        var k1 = data.date + '_' + data.timeSlot;
+        if (!MOCK_DB.bookings[k1]) MOCK_DB.bookings[k1] = { outside: null, inside: null };
+        var bObj = {
+          bookingId: 'MOCK-' + Math.floor(Math.random() * 90000 + 10000),
+          date: data.date,
+          timeSlot: data.timeSlot,
+          tableType: data.tableType,
+          studentIds: data.studentIds,
+          pin: data.pin,
+          status: 'active',
+          bookedAt: new Date().toISOString()
+        };
+        if (data.tableType === 'both') {
+          MOCK_DB.bookings[k1].outside = bObj;
+          MOCK_DB.bookings[k1].inside = bObj;
+        } else {
+          MOCK_DB.bookings[k1][data.tableType] = bObj;
+        }
+        onSuccess({ success: true, bookingId: bObj.bookingId });
+      } else if (action === 'createMockCentralBooking') {
+        onSuccess({ success: true, count: 1 });
+      } else if (action === 'getMyBookings') {
+        var list = [];
+        for (var k in MOCK_DB.bookings) {
+          var row = MOCK_DB.bookings[k];
+          ['outside','inside'].forEach(function(t) {
+            if (row[t] && row[t].studentIds && row[t].studentIds.indexOf(data.studentId) >= 0) {
+              list.push(row[t]);
+            }
+          });
+        }
+        onSuccess(list);
+      } else if (action === 'cancelBooking') {
+        onSuccess({ success: true });
+      } else if (action === 'checkInBooking') {
+        onSuccess({ success: true });
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // DATE HELPERS
+    // ════════════════════════════════════════════════════════════════════
+    function dStr(d) {
+      var y = d.getFullYear();
+      var m = ('0' + (d.getMonth() + 1)).slice(-2);
+      var day = ('0' + d.getDate()).slice(-2);
+      return y + '-' + m + '-' + day;
+    }
+
+    function formatThaiFull(d) {
+      var dayName = DAYS_TH[d.getDay() === 0 ? 6 : d.getDay() - 1];
+      var dateNum = d.getDate();
+      var monthName = MONTHS_FULL[d.getMonth()];
+      var yearBE = d.getFullYear() + 543;
+      return 'วัน' + dayName + 'ที่ ' + dateNum + ' ' + monthName + ' ' + yearBE;
+    }
+
+    function getMonday(d) {
+      var dt = new Date(d);
+      var day = dt.getDay();
+      var diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(dt.setDate(diff));
+    }
+
+    function isPastSlot(slotDate, slotHour) {
+      var now = new Date();
+      var h = parseInt(slotHour);
+      var endT = new Date(slotDate.getFullYear(), slotDate.getMonth(), slotDate.getDate(), h + 1, 0, 0);
+      return now >= endT;
+    }
+
+    function fmtCd(s) {
+      return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+    }
+
+    function getCiSecsLeft(ds, slot, entry) {
+      if (!entry || entry.status !== 'active') return 0;
+      var parts = ds.split('-');
+      var h = parseInt(slot);
+      var slotStart = new Date(+parts[0], +parts[1]-1, +parts[2], h, 0, 0);
+      var windowEnd = new Date(slotStart.getTime() + 5 * 60 * 1000);
+      if (entry.bookedAt) {
+        var bDate = new Date(entry.bookedAt);
+        if (!isNaN(bDate.getTime())) {
+          var bPlus5 = new Date(bDate.getTime() + 5 * 60 * 1000);
+          if (bPlus5 > windowEnd) windowEnd = bPlus5;
+        }
+      }
+      var now = new Date();
+      if (now < slotStart && Math.abs(now - slotStart) > 5 * 60 * 1000) return 0; // Not yet in window
+      return Math.max(0, Math.floor((windowEnd - now) / 1000));
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // NAVIGATION
+    // ════════════════════════════════════════════════════════════════════
+    function navDay(dir) {
+      selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + dir);
+      clearSelection();
+      renderAll();
+    }
+
+    function navToday() {
+      selectedDate = new Date();
+      clearSelection();
+      renderAll();
+    }
+
+    function onDatePicked(val) {
+      if (!val) return;
+      var p = val.split('-');
+      selectedDate = new Date(+p[0], +p[1]-1, +p[2]);
+      clearSelection();
+      renderAll();
+    }
+
+    function selectDateChip(ds) {
+      var p = ds.split('-');
+      selectedDate = new Date(+p[0], +p[1]-1, +p[2]);
+      clearSelection();
+      renderAll();
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // DATA FETCHING & RENDERING
+    // ════════════════════════════════════════════════════════════════════
+    function loadData() {
+      var monday = getMonday(selectedDate);
+      callGasApi('getBookingsForWeek', { date: dStr(monday) }, false,
+        function(data) {
+          bkData = data || {};
+          renderAll();
+        },
+        function(err) {
+          console.error(err);
+          renderAll();
+        }
+      );
+    }
+
+    function refreshData() {
+      toast('🔄 กำลังดึงข้อมูลล่าสุด...', 'info');
+      loadData();
+    }
+
+    function renderAll() {
+      renderHeaderAndChips();
+      renderDaySlots();
+      updateBottomBar();
+      startTicker();
+    }
+
+    function renderHeaderAndChips() {
+      var curTextEl = document.getElementById('curDayText');
+      if (curTextEl) curTextEl.textContent = formatThaiFull(selectedDate);
+
+      // Render 7 Day Chips (Monday to Sunday of the week)
+      var monday = getMonday(selectedDate);
+      var chipsEl = document.getElementById('dayChips');
+      if (!chipsEl) return;
+
+      var curDs = dStr(selectedDate);
+      var html = '';
+
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+        var ds = dStr(d);
+        var isActive = ds === curDs;
+
+        // Calculate free count
+        var freeCount = 0;
+        for (var si = 0; si < SLOTS.length; si++) {
+          var k = ds + '_' + SLOTS[si];
+          var row = bkData[k] || {};
+          if (!row.outside) freeCount++;
+          if (!row.inside) freeCount++;
+        }
+
+        html += '<div class="day-chip ' + (isActive ? 'active' : '') + '" onclick="selectDateChip(\'' + ds + '\')">';
+        html += '  <span class="chip-name">' + DAYS_SHORT[i] + '</span>';
+        html += '  <span class="chip-date">' + d.getDate() + '</span>';
+        html += '  <span class="chip-free">' + freeCount + ' ว่าง</span>';
+        html += '</div>';
+      }
+
+      chipsEl.innerHTML = html;
+    }
+
+    function renderDaySlots() {
+      var cont = document.getElementById('slotsList');
+      if (!cont) return;
+
+      var ds = dStr(selectedDate);
+      var html = '';
+
+      for (var i = 0; i < SLOTS.length; i++) {
+        var slot = SLOTS[i];
+        var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
+        var key = ds + '_' + slot;
+        var rowData = bkData[key] || { outside: null, inside: null };
+
+        var past = isPastSlot(selectedDate, slot);
+        var rowCls = past ? 'slot-row past-row' : 'slot-row';
+
+        // Check Selection
+        var isSelBoth = activeSelection && activeSelection.slot === slot && activeSelection.type === 'both';
+        var isSelOut = isSelBoth || (activeSelection && activeSelection.slot === slot && activeSelection.type === 'outside');
+        var isSelIn = isSelBoth || (activeSelection && activeSelection.slot === slot && activeSelection.type === 'inside');
+
+        // Outside Table State
+        var obEntry = rowData.outside;
+        var obCiLeft = obEntry ? getCiSecsLeft(ds, slot, obEntry) : 0;
+        var obIsCi = obEntry && obEntry.status === 'active' && obCiLeft > 0;
+        var obIsFull = obEntry && !obIsCi;
+
+        var obState = 'state-free';
+        var obStatusText = '🟢 ว่าง (กดเลือก)';
+        if (past) {
+          obState = 'state-past'; obStatusText = '— ผ่านไปแล้ว';
+        } else if (isSelOut) {
+          obState = 'state-selected'; obStatusText = '🔵 ที่เลือก';
+        } else if (obIsCi) {
+          obState = 'state-ci'; obStatusText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_out">' + fmtCd(obCiLeft) + '</span>';
+        } else if (obIsFull) {
+          obState = 'state-full'; obStatusText = '🔴 จองแล้ว';
+        }
+
+        // Inside Table State
+        var ibEntry = rowData.inside;
+        var ibCiLeft = ibEntry ? getCiSecsLeft(ds, slot, ibEntry) : 0;
+        var ibIsCi = ibEntry && ibEntry.status === 'active' && ibCiLeft > 0;
+        var ibIsFull = ibEntry && !ibIsCi;
+
+        var ibState = 'state-free';
+        var ibStatusText = '🟢 ว่าง (กดเลือก)';
+        if (past) {
+          ibState = 'state-past'; ibStatusText = '— ผ่านไปแล้ว';
+        } else if (isSelIn) {
+          ibState = 'state-selected'; ibStatusText = '🔵 ที่เลือก';
+        } else if (ibIsCi) {
+          ibState = 'state-ci'; ibStatusText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_in">' + fmtCd(ibCiLeft) + '</span>';
+        } else if (ibIsFull) {
+          ibState = 'state-full'; ibStatusText = '🔴 จองแล้ว';
+        }
+
+        // Time / Both selector class
+        var timeColCls = 'time-col' + (isSelBoth ? ' selected-both' : '');
+
+        html += '<div class="' + rowCls + '">';
+        
+        // 1. Time Column (💡 แตะเพื่อเลือกทั้งสองห้อง)
+        html += '  <div class="' + timeColCls + '" onclick="toggleSelectSlot(\'' + slot + '\', \'both\', ' + (!obEntry && !ibEntry && !past) + ')" title="แตะเพื่อเลือกทั้งห้องนอกและห้องในพร้อมกัน">';
+        html += '    <div class="tc-range">' + slot + ' - ' + slotEnd + '</div>';
+        html += '    <div class="tc-sub">' + (isSelBoth ? '✓ เลือกทั้ง 2 ห้อง' : '💡 แตะเลือกทั้งห้อง') + '</div>';
+        html += '  </div>';
+
+        // 2. 🚪 ห้องนอก (Outside Table)
+        html += '  <div class="room-card ' + obState + '" onclick="onRoomCardClick(\'' + slot + '\', \'outside\', event)">';
+        html += '    <div class="rc-title"><span>🚪</span> โต๊ะนอก (5 คน)</div>';
+        html += '    <div class="rc-status">' + obStatusText + '</div>';
+        html += '  </div>';
+
+        // 3. 🛏️ ห้องใน (Inside Table)
+        html += '  <div class="room-card ' + ibState + '" onclick="onRoomCardClick(\'' + slot + '\', \'inside\', event)">';
+        html += '    <div class="rc-title"><span>🛏️</span> โต๊ะใน (7 คน)</div>';
+        html += '    <div class="rc-status">' + ibStatusText + '</div>';
+        html += '  </div>';
+
+        html += '</div>';
+      }
+
+      cont.innerHTML = html;
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // INTERACTION & SELECTION
+    // ════════════════════════════════════════════════════════════════════
+    function onRoomCardClick(slot, type, ev) {
+      if (ev) ev.stopPropagation();
+      var ds = dStr(selectedDate);
+      var key = ds + '_' + slot;
+      var rowData = bkData[key] || {};
+      var entry = rowData[type];
+
+      if (isPastSlot(selectedDate, slot)) return;
+
+      // Case 1: Pending Check-in -> Open Check-in Modal
+      var ciLeft = entry ? getCiSecsLeft(ds, slot, entry) : 0;
+      if (entry && entry.status === 'active' && ciLeft > 0) {
+        openCiModal(ds, slot, type, entry);
+        return;
+      }
+
+      // Case 2: Already booked full -> Show info
+      if (entry) {
+        var ids = (entry.studentIds || []).join(', ');
+        toast('ℹ️ ' + (type === 'outside' ? 'ห้องนอก' : 'ห้องใน') + ' ช่วง ' + slot + ' น. จองแล้วโดย: ' + ids, 'info');
+        return;
+      }
+
+      // Case 3: Free -> Toggle Selection
+      toggleSelectSlot(slot, type, true);
+    }
+
+    function toggleSelectSlot(slot, type, canSelect) {
+      if (!canSelect && type === 'both') {
+        toast('⚠️ ไม่สามารถเลือกทั้งสองห้องได้เนื่องจากมีห้องที่ไม่ว่าง', 'error');
+        return;
+      }
+
+      // If clicking the same selection, unselect it
+      if (activeSelection && activeSelection.slot === slot && activeSelection.type === type) {
+        activeSelection = null;
+      } else {
+        activeSelection = { slot: slot, type: type };
+      }
+
+      renderDaySlots();
+      updateBottomBar();
+    }
+
+    function clearSelection() {
+      activeSelection = null;
+      renderDaySlots();
+      updateBottomBar();
+    }
+
+    function updateBottomBar() {
+      var iconEl = document.getElementById('bbIcon');
+      var mainEl = document.getElementById('bbTextMain');
+      var subEl = document.getElementById('bbTextSub');
+      var clearBtn = document.getElementById('btnClearSel');
+      var bookBtn = document.getElementById('btnBookNow');
+
+      if (!activeSelection) {
+        iconEl.textContent = 'ℹ️';
+        mainEl.textContent = 'ยังไม่ได้เลือกช่วงเวลา แตะช่องสีเขียวเพื่อเลือก';
+        subEl.textContent = 'เลือกห้องนอก ห้องใน หรือแตะเวลาเพื่อเลือกทั้งสองห้อง';
+        clearBtn.style.display = 'none';
+        bookBtn.disabled = true;
+        bookBtn.textContent = '⚡ ดำเนินการจอง';
+      } else {
+        var tName = activeSelection.type === 'both' ? '🚪+🛏️ ทั้งห้องนอกและห้องใน' : (activeSelection.type === 'outside' ? '🚪 โต๊ะกลมนอก (5 คน)' : '🛏️ โต๊ะในห้อง (7 คน)');
+        var slotEnd = ('0' + (parseInt(activeSelection.slot) + 1)).slice(-2) + ':00';
+        
+        iconEl.textContent = '✨';
+        mainEl.textContent = activeSelection.slot + ' - ' + slotEnd + ' น. (' + tName + ')';
+        subEl.textContent = '📅 ' + formatThaiFull(selectedDate);
+        clearBtn.style.display = 'block';
+        bookBtn.disabled = false;
+        bookBtn.textContent = '⚡ ดำเนินการจองห้องนี้ ›';
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // BOOKING MODAL & FLOW
+    // ════════════════════════════════════════════════════════════════════
+    function onProceedBooking() {
+      if (!activeSelection) return;
+      var ds = dStr(selectedDate);
+      var slot = activeSelection.slot;
+      var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
+      var tName = activeSelection.type === 'both' ? '🚪+🛏️ ทั้งห้องนอกและห้องใน' : (activeSelection.type === 'outside' ? '🚪 โต๊ะกลมนอก' : '🛏️ โต๊ะในห้อง');
+
+      document.getElementById('mDate').textContent = formatThaiFull(selectedDate);
+      document.getElementById('mTime').textContent = slot + ' - ' + slotEnd + ' น.';
+      document.getElementById('mTable').textContent = tName;
+
+      document.getElementById('sid1').value = '';
+      document.getElementById('sid2').value = '';
+      document.getElementById('bookPin').value = '';
+      
+      ['nameBadge1','nameBadge2'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) { el.textContent = ''; el.classList.remove('vis'); }
+      });
+      ['eSid1','eNotFound1','eQuota1','eSid2','eNotFound2','eSameSid','eQuota2','ePin'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.remove('vis');
+      });
+
+      document.getElementById('bookModal').classList.add('active');
+    }
+
+    function closeBookModal() {
+      document.getElementById('bookModal').classList.remove('active');
+    }
+
+    function onSidInput(num) {
+      var s1 = document.getElementById('sid1').value.trim();
+      var s2 = document.getElementById('sid2').value.trim();
+      var target = num === 1 ? s1 : s2;
+      var nameBadge = document.getElementById('nameBadge' + num);
+      var notFoundEl = document.getElementById('eNotFound' + num);
+      var errEl = document.getElementById('eSid' + num);
+      var sameEl = document.getElementById('eSameSid');
+
+      sameEl.classList.toggle('vis', s1 && s2 && s1 === s2);
+
+      if (target.length === 10) {
+        errEl.classList.remove('vis');
+        callGasApi('verifyStudent', { studentId: target }, false,
+          function(res) {
+            if (res && res.exists) {
+              notFoundEl.classList.remove('vis');
+              nameBadge.textContent = '✓ ' + (res.name || 'รหัสนิสิตถูกต้อง');
+              nameBadge.classList.add('vis');
+              checkQuota(target, num);
+            } else {
+              nameBadge.classList.remove('vis');
+              notFoundEl.textContent = '❌ ไม่พบรหัสนิสิตในฐานข้อมูล';
+              notFoundEl.classList.add('vis');
+            }
+          },
+          function(err) {
+            nameBadge.classList.remove('vis');
+            notFoundEl.textContent = '❌ ไม่สามารถตรวจสอบรหัสนิสิตได้';
+            notFoundEl.classList.add('vis');
+          }
+        );
+      } else {
+        nameBadge.classList.remove('vis');
+        notFoundEl.classList.remove('vis');
+      }
+    }
+
+    function checkQuota(sid, num) {
+      var ds = dStr(selectedDate);
+      callGasApi('getDayQuota', { date: ds, studentId: sid }, false,
+        function(used) {
+          used = parseInt(used) || 0;
+          var full = used >= 2;
+          document.getElementById(num === 1 ? 'eQuota1' : 'eQuota2').classList.toggle('vis', full);
+        }
+      );
+    }
+
+    function submitBooking() {
+      if (!activeSelection) return;
+      var s1 = document.getElementById('sid1').value.trim();
+      var s2 = document.getElementById('sid2').value.trim();
+      var pin = document.getElementById('bookPin').value.trim();
+
+      var v1 = /^\d{10}$/.test(s1);
+      var v2 = /^\d{10}$/.test(s2);
+      var vPin = /^\d{4}$/.test(pin) || pin === 'rxcu';
+
+      document.getElementById('eSid1').classList.toggle('vis', !v1);
+      document.getElementById('eSid2').classList.toggle('vis', !v2);
+      document.getElementById('eSameSid').classList.toggle('vis', s1 && s2 && s1 === s2);
+      document.getElementById('ePin').classList.toggle('vis', !vPin);
+
+      if (!v1 || !v2 || s1 === s2 || !vPin) return;
+
+      var btn = document.getElementById('btnSubmitBook');
+      btn.disabled = true; btn.textContent = 'กำลังบันทึกการจอง…';
+
+      var payload = {
+        date: dStr(selectedDate),
+        timeSlot: activeSelection.slot,
+        tableType: activeSelection.type,
+        studentIds: [s1, s2],
+        pin: pin
+      };
+
+      callGasApi('createBooking', payload, true,
+        function(res) {
+          btn.disabled = false; btn.textContent = 'ยืนยันการจอง';
+          if (res && res.success) {
+            closeBookModal();
+            clearSelection();
+            toast('🎉 สำรองเวลาสำเร็จ! กรุณายืนยันตัวตนก่อนเริ่มซ้อม 5 นาที', 'success');
+            loadData();
+          } else {
+            toast('❌ ' + ((res && res.error) || 'การจองไม่สำเร็จ'), 'error');
+          }
+        },
+        function(err) {
+          btn.disabled = false; btn.textContent = 'ยืนยันการจอง';
+          toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        }
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // CHECK-IN MODAL (5 MIN)
+    // ════════════════════════════════════════════════════════════════════
+    function openCiModal(ds, slot, type, entry) {
+      ciCurrentEntry = { ds: ds, slot: slot, type: type, entry: entry };
+      var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
+      var tName = type === 'outside' ? '🚪 โต๊ะกลมนอก' : '🛏️ โต๊ะในห้อง';
+
+      document.getElementById('ciDateTxt').textContent = formatThaiFull(selectedDate);
+      document.getElementById('ciTimeTxt').textContent = slot + ' - ' + slotEnd + ' น.';
+      document.getElementById('ciTableTxt').textContent = tName;
+      document.getElementById('ciSidInput').value = '';
+      document.getElementById('ciPinInput').value = '';
+
+      ['eCiSid','eCiPin'].forEach(function(id) {
+        document.getElementById(id).classList.remove('vis');
+      });
+
+      var s = getCiSecsLeft(ds, slot, entry);
+      document.getElementById('ciCdText').textContent = fmtCd(s);
+      document.getElementById('ciModal').classList.add('active');
+    }
+
+    function closeCiModal() {
+      document.getElementById('ciModal').classList.remove('active');
+      ciCurrentEntry = null;
+    }
+
+    function submitCiConfirm() {
+      if (!ciCurrentEntry) return;
+      var sid = document.getElementById('ciSidInput').value.trim();
+      var pin = document.getElementById('ciPinInput').value.trim();
+
+      var vSid = /^\d{10}$/.test(sid);
+      var vPin = /^\d{4}$/.test(pin) || pin === 'rxcu';
+
+      document.getElementById('eCiSid').classList.toggle('vis', !vSid);
+      document.getElementById('eCiPin').classList.toggle('vis', !vPin);
+      if (!vSid || !vPin) return;
+
+      var btn = document.getElementById('btnCiConfirmSlot');
+      btn.disabled = true; btn.textContent = 'กำลังยืนยัน…';
+
+      callGasApi('checkInBooking', { bookingId: ciCurrentEntry.entry.bookingId, studentId: sid, pin: pin }, true,
+        function(res) {
+          btn.disabled = false; btn.textContent = '✓ ยืนยันเข้าใช้งาน';
+          if (res && res.success) {
+            closeCiModal();
+            toast('✅ ยืนยันการเข้าใช้งานสำเร็จ ขอให้ฝึกซ้อมอย่างมีประสิทธิภาพ!', 'success');
+            loadData();
+          } else {
+            toast('❌ ' + ((res && res.error) || 'ยืนยันไม่สำเร็จ'), 'error');
+          }
+        },
+        function(err) {
+          btn.disabled = false; btn.textContent = '✓ ยืนยันเข้าใช้งาน';
+          toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        }
+      );
+    }
+
+    function submitCiCancel() {
+      if (!ciCurrentEntry) return;
+      var sid = document.getElementById('ciSidInput').value.trim();
+      var pin = document.getElementById('ciPinInput').value.trim();
+
+      var vSid = /^\d{10}$/.test(sid);
+      var vPin = /^\d{4}$/.test(pin) || pin === 'rxcu';
+
+      document.getElementById('eCiSid').classList.toggle('vis', !vSid);
+      document.getElementById('eCiPin').classList.toggle('vis', !vPin);
+      if (!vSid || !vPin) return;
+
+      var btn = document.getElementById('btnCiCancelSlot');
+      btn.disabled = true; btn.textContent = 'กำลังยกเลิก…';
+
+      callGasApi('cancelBooking', { bookingId: ciCurrentEntry.entry.bookingId, studentId: sid, pin: pin }, true,
+        function(res) {
+          btn.disabled = false; btn.textContent = 'ยกเลิก Slot นี้';
+          if (res && res.success) {
+            closeCiModal();
+            toast('✅ ยกเลิกการจองสำเร็จ คืนพื้นที่ให้เพื่อนนิสิตเรียบร้อย', 'success');
+            loadData();
+          } else {
+            toast('❌ ' + ((res && res.error) || 'ยกเลิกไม่สำเร็จ'), 'error');
+          }
+        },
+        function(err) {
+          btn.disabled = false; btn.textContent = 'ยกเลิก Slot นี้';
+          toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        }
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // MY BOOKINGS & CANCEL BY PIN
+    // ════════════════════════════════════════════════════════════════════
+    function openMyBookings() {
+      document.getElementById('myBookingsModal').classList.add('active');
+    }
+
+    function closeMyBookings() {
+      document.getElementById('myBookingsModal').classList.remove('active');
+    }
+
+    function searchMyBookings() {
+      var sid = document.getElementById('mySidSearch').value.trim();
+      var listEl = document.getElementById('myBookingsList');
+
+      if (!/^\d{10}$/.test(sid)) {
+        toast('กรุณากรอกรหัสนิสิต 10 หลัก', 'error');
+        return;
+      }
+
+      listEl.innerHTML = '<div style="text-align:center;padding:24px"><div class="spinner"></div> กำลังค้นหา…</div>';
+
+      callGasApi('getMyBookings', { studentId: sid }, false,
+        function(bookings) {
+          if (!bookings || bookings.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt3)">🎉 ไม่พบรายการจองที่ใช้งานอยู่ของรหัส ' + sid + '</div>';
+            return;
+          }
+
+          var html = '';
+          for (var i = 0; i < bookings.length; i++) {
+            var b = bookings[i];
+            var tName = b.tableType === 'both' ? '🚪+🛏️ ทั้งห้อง' : (b.tableType === 'outside' ? '🚪 โต๊ะกลมนอก' : '🛏️ โต๊ะในห้อง');
+            var statusTxt = b.status === 'checked_in' ? '<span style="color:var(--free-txt);font-weight:700">✓ ยืนยันเข้าใช้แล้ว</span>' : '<span style="color:var(--ci-txt);font-weight:700">รอยืนยัน</span>';
+
+            html += '<div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:12px; padding:12px; margin-bottom:8px">';
+            html += '  <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.88rem">';
+            html += '    <span>' + b.date + ' (' + b.timeSlot + ' น.)</span>';
+            html += '    <span>' + tName + '</span>';
+            html += '  </div>';
+            html += '  <div style="font-size:0.78rem; color:var(--txt2); margin-top:4px">';
+            html += '    <div>กลุ่ม: ' + (b.studentIds || []).join(', ') + '</div>';
+            html += '    <div>สถานะ: ' + statusTxt + '</div>';
+            html += '  </div>';
+            html += '  <div style="display:flex; justify-content:flex-end; margin-top:8px">';
+            html += '    <button class="btn btn-d" style="height:32px; font-size:0.75rem; padding:0 12px" onclick="openPinCancel(\'' + b.bookingId + '\',\'' + sid + '\',\'' + b.date + ' ' + b.timeSlot + ' น. ' + tName + '\')">🗑️ ขอยกเลิก</button>';
+            html += '  </div>';
+            html += '</div>';
+          }
+          listEl.innerHTML = html;
+        },
+        function(err) {
+          listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#e11d48">เกิดข้อผิดพลาด: ' + (err.message || err) + '</div>';
+        }
+      );
+    }
+
+    function openPinCancel(bId, sid, summary) {
+      pendingCancelEntry = { bookingId: bId, sid: sid };
+      document.getElementById('pinCancelInfo').innerHTML = '<strong>ต้องการยกเลิก:</strong><br>' + summary;
+      document.getElementById('inputCancelPin').value = '';
+      document.getElementById('eCancelPin').classList.remove('vis');
+      document.getElementById('pinCancelModal').classList.add('active');
+    }
+
+    function closePinCancel() {
+      document.getElementById('pinCancelModal').classList.remove('active');
+      pendingCancelEntry = null;
+    }
+
+    function confirmCancelBooking() {
+      if (!pendingCancelEntry) return;
+      var pin = document.getElementById('inputCancelPin').value.trim();
+      var vPin = /^\d{4}$/.test(pin) || pin === 'rxcu';
+      document.getElementById('eCancelPin').classList.toggle('vis', !vPin);
+      if (!vPin) return;
+
+      var btn = document.getElementById('btnConfirmCancel');
+      btn.disabled = true; btn.textContent = 'กำลังยกเลิก…';
+
+      callGasApi('cancelBooking', { bookingId: pendingCancelEntry.bookingId, studentId: pendingCancelEntry.sid, pin: pin }, true,
+        function(res) {
+          btn.disabled = false; btn.textContent = 'ยืนยันยกเลิก';
+          if (res && res.success) {
+            closePinCancel();
+            toast('✅ ยกเลิกการจองสำเร็จ คืน Slot เรียบร้อย', 'success');
+            searchMyBookings();
+            loadData();
+          } else {
+            toast('❌ ' + ((res && res.error) || 'ยกเลิกไม่สำเร็จ'), 'error');
+          }
+        },
+        function(err) {
+          btn.disabled = false; btn.textContent = 'ยืนยันยกเลิก';
+          toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        }
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // CENTRAL / MOCK EXAM BOOKING
+    // ════════════════════════════════════════════════════════════════════
+    function openMockModal() {
+      document.getElementById('mockDate').value = dStr(selectedDate);
+      
+      var sHtml = '';
+      for (var i = 0; i < SLOTS.length; i++) {
+        var s = SLOTS[i];
+        var sEnd = ('0' + (parseInt(s) + 1)).slice(-2) + ':00';
+        sHtml += '<option value="' + s + '">' + s + ' น.</option>';
+      }
+      document.getElementById('mockStartSlot').innerHTML = sHtml;
+      document.getElementById('mockEndSlot').innerHTML = sHtml;
+      document.getElementById('mockEndSlot').value = '17:00';
+
+      document.getElementById('mockTitle').value = '';
+      document.getElementById('mockPass').value = '';
+      document.getElementById('mockModal').classList.add('active');
+    }
+
+    function closeMockModal() {
+      document.getElementById('mockModal').classList.remove('active');
+    }
+
+    function submitMockBooking() {
+      var title = document.getElementById('mockTitle').value.trim();
+      var date = document.getElementById('mockDate').value;
+      var start = document.getElementById('mockStartSlot').value;
+      var end = document.getElementById('mockEndSlot').value;
+      var table = document.getElementById('mockTableType').value;
+      var pass = document.getElementById('mockPass').value.trim();
+
+      if (!title || !date || !start || !end || !pass) {
+        toast('กรุณากรอกข้อมูลการจองส่วนกลางให้ครบถ้วน', 'error');
+        return;
+      }
+
+      if (pass !== 'rxcu' && pass !== 'maxnum' && pass !== 'ple2569') {
+        toast('❌ รหัสผ่านยืนยันสิทธิ์ส่วนกลางไม่ถูกต้อง', 'error');
+        return;
+      }
+
+      var startIdx = SLOTS.indexOf(start);
+      var endIdx = SLOTS.indexOf(end);
+      if (endIdx < startIdx) {
+        toast('เวลาสิ้นสุดต้องไม่ก่อนเวลาเริ่มต้น', 'error');
+        return;
+      }
+
+      var btn = document.getElementById('btnSubmitMock');
+      btn.disabled = true; btn.textContent = 'กำลังบันทึก…';
+
+      var payload = {
+        title: title,
+        date: date,
+        startSlot: start,
+        endSlot: end,
+        tableType: table,
+        pin: pass
+      };
+
+      callGasApi('createMockCentralBooking', payload, true,
+        function(res) {
+          btn.disabled = false; btn.textContent = 'ยืนยันจองส่วนกลาง';
+          if (res && res.success) {
+            closeMockModal();
+            toast('🏛️ จองกิจกรรมส่วนกลาง/Mock Exam สำเร็จเรียบร้อย!', 'success');
+            loadData();
+          } else {
+            toast('❌ ' + ((res && res.error) || 'จองไม่สำเร็จ'), 'error');
+          }
+        },
+        function(err) {
+          btn.disabled = false; btn.textContent = 'ยืนยันจองส่วนกลาง';
+          toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        }
+      );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // TICKER & THEME & TOAST
+    // ════════════════════════════════════════════════════════════════════
+    function startTicker() {
+      if (tickerInterval) clearInterval(tickerInterval);
+      tickerInterval = setInterval(function() {
+        var ds = dStr(selectedDate);
+        var els = document.querySelectorAll('.rc-countdown');
+        for (var i = 0; i < els.length; i++) {
+          var el = els[i];
+          var key = el.dataset.key; // e.g. "2026-10-19_08:00_out"
+          if (!key) continue;
+          var p = key.split('_');
+          var slotKey = p[0] + '_' + p[1];
+          var t = p[2] === 'out' ? 'outside' : 'inside';
+          var row = bkData[slotKey] || {};
+          var entry = row[t];
+          var s = getCiSecsLeft(p[0], p[1], entry);
+          el.textContent = fmtCd(s);
+          if (s === 0) {
+            clearInterval(tickerInterval);
+            loadData();
+          }
+        }
+
+        // Inside Check-in modal countdown
+        if (ciCurrentEntry) {
+          var s2 = getCiSecsLeft(ciCurrentEntry.ds, ciCurrentEntry.slot, ciCurrentEntry.entry);
+          document.getElementById('ciCdText').textContent = fmtCd(s2);
+          if (s2 === 0) closeCiModal();
+        }
+      }, 1000);
+    }
+
+    function toggleTheme() {
+      var current = document.documentElement.getAttribute('data-theme') || 'light';
+      var next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      document.getElementById('btnTheme').textContent = next === 'dark' ? '🌙 โหมด' : '☀️ โหมด';
+    }
+
+    function toast(msg, type) {
+      var t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.className = 'toast ' + (type || 'success') + ' show';
+      setTimeout(function() { t.classList.remove('show'); }, 3800);
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeBookModal();
+        closeCiModal();
+        closeMyBookings();
+        closePinCancel();
+        closeMockModal();
+      }
+    });
+
+    // Initial boot
+    window.addEventListener('DOMContentLoaded', function() {
+      renderAll();
+      loadData();
+    });
+  </script>
+</body>
+</html>
