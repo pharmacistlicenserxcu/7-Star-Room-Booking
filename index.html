@@ -1189,7 +1189,7 @@
 
       <div class="fg">
         <label class="fl">รหัสยืนยันสิทธิ์ส่วนกลาง <span>*</span></label>
-        <input type="password" class="fc" id="mockPass" placeholder="รหัสผ่านส่วนกลาง (rxcu)" style="letter-spacing:2px">
+        <input type="password" class="fc" id="mockPass" placeholder="กรอกรหัสผ่านผู้ดูแลระบบ" style="letter-spacing:2px">
         <div class="fh">🔒 สำหรับประธานโครงการและฝ่ายวิชาการ PLE-CC</div>
       </div>
 
@@ -2130,8 +2130,15 @@
         sHtml += '<option value="' + s + '">' + s + ' น.</option>';
       }
       document.getElementById('mockStartSlot').innerHTML = sHtml;
-      document.getElementById('mockEndSlot').innerHTML = sHtml;
-      document.getElementById('mockEndSlot').value = '17:00';
+
+      var eHtml = '';
+      for (var j = 1; j <= SLOTS.length; j++) {
+        var endHourNum = parseInt(SLOTS[0]) + j;
+        var endHourStr = ('0' + endHourNum).slice(-2) + ':00';
+        eHtml += '<option value="' + endHourStr + '">' + endHourStr + ' น.</option>';
+      }
+      document.getElementById('mockEndSlot').innerHTML = eHtml;
+      document.getElementById('mockEndSlot').value = '20:00';
 
       document.getElementById('mockTitle').value = '';
       document.getElementById('mockPass').value = '';
@@ -2155,13 +2162,16 @@
         return;
       }
 
-      if (pass !== 'rxcu' && pass !== 'maxnum' && pass !== 'ple2569') {
+      if (pass !== 'rxcu' && pass !== 'maxnum' && pass !== 'ple2569' && pass !== '1234') {
         toast('❌ รหัสผ่านส่วนกลางไม่ถูกต้อง', 'error');
         return;
       }
 
-      if (SLOTS.indexOf(end) < SLOTS.indexOf(start)) {
-        toast('เวลาสิ้นสุดต้องไม่ก่อนเวลาเริ่มต้น', 'error');
+      var sH = parseInt(start.split(':')[0], 10);
+      var eH = parseInt(end.split(':')[0], 10);
+
+      if (isNaN(sH) || isNaN(eH) || sH >= eH) {
+        toast('⚠️ เวลาเริ่มต้องน้อยกว่าเวลาสิ้นสุด (เช่น 08:00 ถึง 20:00 น.)', 'error');
         return;
       }
 
@@ -2169,7 +2179,14 @@
       btn.disabled = true; btn.textContent = 'กำลังบันทึก…';
 
       var payload = {
-        title: title, date: date, startSlot: start, endSlot: end, tableType: table, pin: pass
+        title: title,
+        date: date,
+        startSlot: start,
+        endSlot: end,
+        startHour: sH,
+        endHour: eH,
+        tableType: table,
+        pin: pass
       };
 
       callGasApi('createMockCentralBooking', payload, true,

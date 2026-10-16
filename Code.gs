@@ -840,11 +840,13 @@ function createMockCentralBooking(payload) {
   const lock = LockService.getScriptLock();
   try {
     lock.waitLock(15000);
-    const { date, startHour, endHour, tableType, title, coordinator, pin } = payload;
+    const { date, tableType, title, coordinator, pin } = payload;
+    const startVal = payload.startHour !== undefined ? payload.startHour : (payload.startSlot || '');
+    const endVal   = payload.endHour !== undefined ? payload.endHour : (payload.endSlot || '');
 
     const cleanDate  = _normalizeDateStr(date);
-    const sH         = parseInt(startHour, 10);
-    const eH         = parseInt(endHour, 10);
+    const sH         = parseInt(String(startVal).split(':')[0], 10);
+    const eH         = parseInt(String(endVal).split(':')[0], 10);
     const adminPin   = String(pin || '').trim();
     const eventTitle = String(title || 'สอบ Mock Exam OSPE').trim();
     const coordName  = String(coordinator || 'ฝ่ายจัดสอบส่วนกลาง').trim();
@@ -853,7 +855,7 @@ function createMockCentralBooking(payload) {
     if (isNaN(sH) || isNaN(eH) || sH >= eH) {
       return { success: false, error: 'ช่วงเวลาไม่ถูกต้อง (เวลาเริ่มต้องน้อยกว่าเวลาสิ้นสุด)' };
     }
-    if (adminPin !== 'rxcu' && adminPin !== 'ple2569' && adminPin !== '1234') {
+    if (adminPin !== 'rxcu' && adminPin !== 'ple2569' && adminPin !== '1234' && adminPin !== 'maxnum') {
       return { success: false, error: 'รหัส Admin PIN ไม่ถูกต้อง' };
     }
 
