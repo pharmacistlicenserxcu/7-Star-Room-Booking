@@ -32,6 +32,17 @@ function doGet(e) {
 
       if (action === 'getBookingsForWeek') {
         result = getBookingsForWeek(params.weekStartDate || params.date);
+      } else if (action === 'getSystemInfo') {
+        const ss = getSpreadsheet();
+        const bSheet = ss ? findBookingSheet_(ss) : null;
+        result = {
+          success: true,
+          spreadsheetId: ss ? ss.getId() : '',
+          spreadsheetTitle: ss ? ss.getName() : '',
+          activeSheetName: bSheet ? bSheet.getName() : '',
+          totalRows: bSheet ? bSheet.getLastRow() : 0,
+          allSheets: ss ? ss.getSheets().map(s => ({ name: s.getName(), rows: s.getLastRow() })) : []
+        };
       } else if (action === 'verifyStudent') {
         result = verifyStudent(params.studentId);
       } else if (action === 'getDayQuota') {
@@ -115,9 +126,16 @@ function doPost(e) {
 }
 
 /**
- * เปิด Spreadsheet (รองรับทั้งเปิดด้วย ID และผูกกับ Sheet ปัจจุบัน)
+ * เปิด Spreadsheet (รองรับทั้ง Active Sheet ของ Container-bound และ ID ของ Standalone)
  */
 function getSpreadsheet() {
+  // 1. ถ้าเป็น Container-bound Script ที่ผูกกับ Google Sheet โดยตรง ให้ใช้ Active Spreadsheet ก่อนเสมอ
+  try {
+    const active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (e) {}
+
+  // 2. ถ้าเป็น Standalone ให้เปิดด้วย CONFIG.spreadsheetId
   if (CONFIG.spreadsheetId && CONFIG.spreadsheetId.trim() !== '') {
     try {
       return SpreadsheetApp.openById(CONFIG.spreadsheetId.trim());
@@ -125,12 +143,34 @@ function getSpreadsheet() {
       Logger.log('Could not open spreadsheet by ID: ' + e.toString());
     }
   }
-  try {
-    return SpreadsheetApp.getActiveSpreadsheet();
-  } catch (e) {
-    Logger.log('Could not open active spreadsheet: ' + e.toString());
-    return null;
+  return null;
+}
+
+/**
+ * ค้นหา Sheet ที่เก็บข้อมูลการจองอย่างยืดหยุ่น (รองรับ RoomBookings, Sheet1, การจอง, ฯลฯ)
+ */
+function findBookingSheet_(ss) {
+  if (!ss) return null;
+  // 1. ลองหาจากชื่อที่กำหนดใน CONFIG
+  let sheet = ss.getSheetByName(CONFIG.sheets.roomBookings);
+  if (sheet && sheet.getLastRow() > 1) return sheet;
+
+  // 2. ลองค้นหาชื่ออื่นๆ ที่เป็นไปได้
+  const candidateNames = [
+    'RoomBookings', 'Room Bookings', 'Bookings', 'Booking',
+    'การจอง', 'ตารางการจอง', 'ข้อมูลการจอง', 'ห้อง 7 ดาว',
+    'Sheet1', 'ชีต1'
+  ];
+  for (const name of candidateNames) {
+    const candidate = ss.getSheetByName(name);
+    if (candidate && candidate.getLastRow() > 1) {
+      Logger.log('✅ พบข้อมูลการจองใน Sheet: ' + name);
+      return candidate;
+    }
   }
+
+  // 3. หากยังไม่พบข้อมูล ให้คืนค่า sheet เดิมหรือ Sheet แรกสุด
+  return sheet || ss.getSheets()[0];
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -415,10 +455,10 @@ function getBookingsForWeek(weekStartDate) {
     const ss = getSpreadsheet();
     if (!ss) return {};
 
-    let sheet = ss.getSheetByName(CONFIG.sheets.roomBookings);
+    let sheet = findBookingSheet_(ss);
     if (!sheet) {
       setupRoomSheets();
-      sheet = ss.getSheetByName(CONFIG.sheets.roomBookings);
+      sheet = findBookingSheet_(ss);
     }
     if (!sheet || sheet.getLastRow() <= 1) return {};
 
@@ -429,36 +469,56 @@ function getBookingsForWeek(weekStartDate) {
     }
 
     const [y, m, d] = cleanStartDate.split('-').map(Number);
-    const startDate = new Date(y, m - 1, d);
-    const endDate   = new Date(y, m - 1, d + 6);
-    const startStr  = cleanStartDate;
+    // ขยายช่วงการดึงข้อมูลเป็น 28 วัน (-7 วัน ถึง +21 วัน) เพื่อให้การเลื่อนดูวันถัดไป/สัปดาห์หน้าโหลดทันที ไม่หาย
+    const startDate = new Date(y, m - 1, d - 7);
+    const endDate   = new Date(y, m - 1, d + 21);
+    const startStr  = Utilities.formatDate(startDate, 'Asia/Bangkok', 'yyyy-MM-dd');
     const endStr    = Utilities.formatDate(endDate, 'Asia/Bangkok', 'yyyy-MM-dd');
 
     const data    = sheet.getDataRange().getValues();
-    const headers = data[0];
-    const bookedAtColIdx  = headers.indexOf('bookedAt') !== -1 ? headers.indexOf('bookedAt') : 7;
-    const statusColIdx    = headers.indexOf('status') !== -1 ? headers.indexOf('status') : 8;
-    const checkedInColIdx = headers.indexOf('checkedInAt') !== -1 ? headers.indexOf('checkedInAt') : 9;
+    if (data.length <= 1) return {};
+
+    const rawHeaders = data[0].map(h => String(h).trim().toLowerCase());
+    
+    // ตรวจสอบตำแหน่งคอลัมน์แบบยืดหยุ่น (รองรับทั้งภาษาไทยและอังกฤษ)
+    let bIdCol = rawHeaders.findIndex(h => h.includes('bookingid') || h.includes('id') || h.includes('รหัสการจอง'));
+    let dateCol = rawHeaders.findIndex(h => h === 'date' || h.includes('วัน'));
+    let timeCol = rawHeaders.findIndex(h => h.includes('time') || h.includes('slot') || h.includes('เวลา'));
+    let typeCol = rawHeaders.findIndex(h => h.includes('table') || h.includes('type') || h.includes('โต๊ะ') || h.includes('ห้อง'));
+    let sidsCol = rawHeaders.findIndex(h => h.includes('student') || h.includes('sid') || h.includes('นิสิต') || h.includes('ผู้จอง'));
+    let bookedAtColIdx = rawHeaders.findIndex(h => h.includes('bookedat') || h.includes('เวลาที่จอง'));
+    let statusColIdx = rawHeaders.findIndex(h => h.includes('status') || h.includes('สถานะ'));
+    let checkedInColIdx = rawHeaders.findIndex(h => h.includes('check') || h.includes('ยืนยัน'));
+
+    if (bIdCol === -1) bIdCol = 0;
+    if (dateCol === -1) dateCol = 1;
+    if (timeCol === -1) timeCol = 2;
+    if (typeCol === -1) typeCol = 3;
+    if (sidsCol === -1) sidsCol = 4;
+    if (bookedAtColIdx === -1) bookedAtColIdx = 7;
+    if (statusColIdx === -1) statusColIdx = 8;
+    if (checkedInColIdx === -1) checkedInColIdx = 9;
+
     const result  = {};
 
     for (let i = 1; i < data.length; i++) {
       const row         = data[i];
-      let bId           = row[0] ? String(row[0]).trim() : '';
-      const date        = _normalizeDateStr(row[1]);
-      const time        = _normalizeTimeStr(row[2]);
-      let tTypeRaw      = row[3] ? String(row[3]).trim().toLowerCase() : '';
-      const sIds        = row[4] ? String(row[4]).trim() : '';
-      const bookedAt    = row[bookedAtColIdx] ? String(row[bookedAtColIdx]).trim() : '';
-      let status        = row[statusColIdx] ? String(row[statusColIdx]).trim().toLowerCase() : 'active';
-      const checkedInAt = row[checkedInColIdx] ? String(row[checkedInColIdx]).trim() : '';
+      let bId           = row[bIdCol] ? String(row[bIdCol]).trim() : '';
+      const date        = _normalizeDateStr(row[dateCol]);
+      const time        = _normalizeTimeStr(row[timeCol]);
+      let tTypeRaw      = row[typeCol] ? String(row[typeCol]).trim().toLowerCase() : '';
+      const sIds        = row[sidsCol] ? String(row[sidsCol]).trim() : '';
+      const bookedAt    = (bookedAtColIdx !== -1 && row[bookedAtColIdx]) ? String(row[bookedAtColIdx]).trim() : '';
+      let status        = (statusColIdx !== -1 && row[statusColIdx]) ? String(row[statusColIdx]).trim().toLowerCase() : 'active';
+      const checkedInAt = (checkedInColIdx !== -1 && row[checkedInColIdx]) ? String(row[checkedInColIdx]).trim() : '';
 
       // หากผู้ใช้กรอกเองใน Google Sheet แล้วไม่ได้ใส่ bookingId ให้ auto-generate จำลอง
       if (!bId && (date || time)) {
         bId = `BK-MANUAL-${i}`;
       }
 
-      // สถานะยกเลิกหรือไม่มา ไม่นำมาแสดงผล
-      if (!bId || status === 'cancelled' || status === 'no_show' || !date || !time) continue;
+      // ข้ามเฉพาะรายการที่ตั้งใจกดยกเลิก
+      if (!bId || status === 'cancelled' || !date || !time) continue;
       if (date < startStr || date > endStr) continue;
 
       // Normalization ประเภทโต๊ะ (รองรับภาษาไทย และ both/เหมาห้อง)
@@ -1067,33 +1127,43 @@ function checkInBooking(bookingId, studentId, pin) {
 
 /**
  * autoExpireBookings_()
- * ตรวจสอบและยกเลิก No-Show อัตโนมัติ (ให้เวลายืนยัน 5 นาทีจากเวลาเริ่ม Slot หรือ 5 นาทีจากเวลาจอง)
+ * ตรวจสอบและยกเลิก No-Show อัตโนมัติ (ให้เวลายืนยัน 15 นาทีจากเวลาเริ่ม Slot)
+ * ป้องกันไม่ให้แตะต้องรายการจองในอนาคตโดยเด็ดขาด
  */
 function autoExpireBookings_() {
   try {
     const ss = getSpreadsheet();
     if (!ss) return;
-    const sheet = ss.getSheetByName(CONFIG.sheets.roomBookings);
+    const sheet = findBookingSheet_(ss);
     if (!sheet || sheet.getLastRow() <= 1) return;
 
     const data = sheet.getDataRange().getValues();
-    const headers = data[0];
-    const bookedAtColIdx = headers.indexOf('bookedAt') !== -1 ? headers.indexOf('bookedAt') : 7;
-    const statusColIdx   = headers.indexOf('status') !== -1 ? headers.indexOf('status') : 8;
-    const now  = new Date();
+    const headers = data[0].map(h => String(h).trim().toLowerCase());
+    const statusColIdx = headers.findIndex(h => h.includes('status') || h.includes('สถานะ'));
+    const bookedAtColIdx = headers.findIndex(h => h.includes('bookedat') || h.includes('เวลาที่จอง'));
+    const dateColIdx = headers.findIndex(h => h === 'date' || h.includes('วัน'));
+    const timeColIdx = headers.findIndex(h => h.includes('time') || h.includes('slot') || h.includes('เวลา'));
+    const now = new Date();
+
+    const actualStatusCol = statusColIdx !== -1 ? statusColIdx : 8;
+    const actualBookedAtCol = bookedAtColIdx !== -1 ? bookedAtColIdx : 7;
+    const actualDateCol = dateColIdx !== -1 ? dateColIdx : 1;
+    const actualTimeCol = timeColIdx !== -1 ? timeColIdx : 2;
+
     const historySheet = ss.getSheetByName(CONFIG.sheets.bookingHistory);
 
     for (let i = 1; i < data.length; i++) {
-      const row         = data[i];
-      const bId         = row[0] ? String(row[0]).trim() : '';
-      const date        = _normalizeDateStr(row[1]);
-      const time        = _normalizeTimeStr(row[2]);
-      const tType       = row[3] ? String(row[3]).trim() : '';
-      const sIds        = row[4] ? String(row[4]).trim() : '';
-      let status        = row[statusColIdx] ? String(row[statusColIdx]).trim().toLowerCase() : 'active';
+      const row = data[i];
+      const bId = row[0] ? String(row[0]).trim() : '';
+      const date = _normalizeDateStr(row[actualDateCol]);
+      const time = _normalizeTimeStr(row[actualTimeCol]);
+      const tType = row[3] ? String(row[3]).trim() : '';
+      const sIds = row[4] ? String(row[4]).trim() : '';
+      let status = row[actualStatusCol] ? String(row[actualStatusCol]).trim().toLowerCase() : 'active';
+      const bookedAtStr = (actualBookedAtCol !== -1 && row[actualBookedAtCol]) ? String(row[actualBookedAtCol]).trim() : '';
 
-      // หากเป็นการจองส่วนกลาง / Mock exam ไม่ต้อง auto-expire
-      if (status.includes('mock') || status.includes('central') || status.includes('reserved') || status.includes('confirm') || status === 'checked_in') {
+      // หากเป็นการจองส่วนกลาง / Mock exam หรือสถานะยืนยันแล้ว ไม่ต้อง auto-expire
+      if (status.includes('mock') || status.includes('central') || status.includes('reserved') || status.includes('confirm') || status === 'checked_in' || status === 'cancelled' || status === 'no_show') {
         continue;
       }
 
@@ -1106,13 +1176,16 @@ function autoExpireBookings_() {
       const slotStart = new Date(y, m - 1, d, slotH, 0, 0);
       const slotEnd   = new Date(y, m - 1, d, slotH + 1, 0, 0);
 
-      let windowEnd = new Date(slotStart.getTime() + 5 * 60 * 1000);
+      // ห้าม Auto-expire การจองในอนาคตเด็ดขาด!
+      if (now < slotStart) continue;
+
+      let windowEnd = new Date(slotStart.getTime() + 15 * 60 * 1000);
       if (bookedAtStr) {
         const bookedAtDate = new Date(bookedAtStr);
         if (!isNaN(bookedAtDate.getTime())) {
-          const bookedPlus5 = new Date(bookedAtDate.getTime() + 5 * 60 * 1000);
-          if (bookedPlus5 > windowEnd) {
-            windowEnd = bookedPlus5;
+          const bookedPlus15 = new Date(bookedAtDate.getTime() + 15 * 60 * 1000);
+          if (bookedPlus15 > windowEnd) {
+            windowEnd = bookedPlus15;
           }
         }
       }
@@ -1121,7 +1194,7 @@ function autoExpireBookings_() {
       }
 
       if (now > windowEnd) {
-        sheet.getRange(i + 1, statusColIdx + 1).setValue('no_show');
+        sheet.getRange(i + 1, actualStatusCol + 1).setValue('no_show');
 
         if (historySheet) {
           const logId  = historySheet.getLastRow();

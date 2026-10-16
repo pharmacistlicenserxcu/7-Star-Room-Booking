@@ -605,6 +605,7 @@
     <div class="nb-right">
       <button class="btn-action btn-quick" onclick="openQuickBookModal()">📅 จองระบุวัน</button>
       <button class="btn-action" onclick="openMyBookings()">📋 การจองของฉัน</button>
+      <button class="btn-action" onclick="checkSheetConnection()">📊 สถานะชีต</button>
       <button class="btn-action" onclick="openMockModal()">🏛️ ส่วนกลาง/Mock</button>
       <button class="btn-action" onclick="refreshData()">🔄 รีเฟรช</button>
       <button class="btn-action" id="btnTheme" onclick="toggleTheme()">☀️ โหมด</button>
@@ -1164,12 +1165,14 @@
       selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + dir);
       clearSelection();
       renderAll();
+      loadData();
     }
 
     function navToday() {
       selectedDate = new Date();
       clearSelection();
       renderAll();
+      loadData();
     }
 
     function onDatePicked(val) {
@@ -1178,6 +1181,7 @@
       selectedDate = new Date(+p[0], +p[1]-1, +p[2]);
       clearSelection();
       renderAll();
+      loadData();
     }
 
     function selectDateChip(ds) {
@@ -1185,6 +1189,7 @@
       selectedDate = new Date(+p[0], +p[1]-1, +p[2]);
       clearSelection();
       renderAll();
+      loadData();
     }
 
     function toggleRules() {
@@ -1197,13 +1202,44 @@
 
     function loadData() {
       var monday = getMonday(selectedDate);
-      callGasApi('getBookingsForWeek', { date: dStr(monday) }, false,
+      var mStr = dStr(monday);
+      callGasApi('getBookingsForWeek', { date: mStr }, false,
         function(data) {
-          bkData = data || {};
+          if (data && typeof data === 'object') {
+            for (var k in data) {
+              if (data.hasOwnProperty(k)) {
+                bkData[k] = data[k];
+              }
+            }
+          }
           renderAll();
         },
-        function() {
+        function(err) {
+          console.warn('loadData failed, rendering cached/mock:', err);
           renderAll();
+        }
+      );
+    }
+
+    function checkSheetConnection() {
+      toast('🔍 กำลังตรวจสอบการเชื่อมต่อ Google Sheet...', 'info');
+      callGasApi('getSystemInfo', {}, false,
+        function(res) {
+          if (res && res.success) {
+            var allSheetNames = (res.allSheets || []).map(function(s){ return s.name + ' (' + s.rows + ' แถว)'; }).join('\n  • ');
+            var msg = '📊 สถานะการเชื่อมต่อ Google Sheet สำเร็จ!\n\n' +
+                      '📁 ชื่อไฟล์: ' + (res.spreadsheetTitle || 'ไม่ระบุ') + '\n' +
+                      '🆔 Spreadsheet ID: ' + res.spreadsheetId + '\n' +
+                      '📑 แท็บที่อ่านข้อมูล: ' + (res.activeSheetName || 'RoomBookings') + '\n' +
+                      '👥 จำนวนแถวการจองทั้งหมด: ' + (res.totalRows > 1 ? (res.totalRows - 1) + ' รายการ' : '0 รายการ (ยังไม่มีการจอง)') + '\n\n' +
+                      '📋 แท็บทั้งหมดในไฟล์:\n  • ' + allSheetNames;
+            alert(msg);
+          } else {
+            alert('⚠️ ไม่สามารถดึงข้อมูลระบบได้: ' + JSON.stringify(res));
+          }
+        },
+        function(err) {
+          alert('❌ เชื่อมต่อ Google Apps Script ไม่สำเร็จ:\n' + (err && err.message ? err.message : JSON.stringify(err)));
         }
       );
     }
