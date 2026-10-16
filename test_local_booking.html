@@ -762,9 +762,9 @@
           <input type="date" id="datePickerHidden" class="date-picker-hidden" onchange="onDatePicked(this.value)">
         </div>
         <div class="day-arrows">
-          <button class="btn-day-nav" onclick="navDay(-1)">‹ วันก่อน</button>
-          <button class="btn-day-nav btn-day-today" onclick="navToday()">วันนี้</button>
-          <button class="btn-day-nav" onclick="navDay(1)">วันถัดไป ›</button>
+          <button class="btn-day-nav" onclick="navWeek(-1)" title="เลื่อนไปสัปดาห์ก่อนหน้า">‹ สัปดาห์ก่อน</button>
+          <button class="btn-day-nav btn-day-today" onclick="navToday()" title="กลับมาสัปดาห์ปัจจุบัน (วันนี้)">สัปดาห์นี้</button>
+          <button class="btn-day-nav" onclick="navWeek(1)" title="เลื่อนไปสัปดาห์ถัดไป">สัปดาห์ถัดไป ›</button>
         </div>
       </div>
 
@@ -1374,11 +1374,15 @@
     // ════════════════════════════════════════════════════════════════════
     // NAVIGATION & RENDERING
     // ════════════════════════════════════════════════════════════════════
-    function navDay(dir) {
-      selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + dir);
+    function navWeek(dir) {
+      selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + (dir * 7));
       clearSelection();
       renderAll();
       loadData();
+    }
+
+    function navDay(dir) {
+      navWeek(dir);
     }
 
     function navToday() {
