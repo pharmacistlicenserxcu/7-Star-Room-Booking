@@ -696,7 +696,7 @@ function createBooking(payload) {
     if (String(studentIds[0]).trim() === String(studentIds[1]).trim()) {
       return { success: false, error: 'รหัสนิสิตคนที่ 1 และคนที่ 2 ต้องไม่ซ้ำกัน' };
     }
-    if (!['outside','inside'].includes(tableType)) {
+    if (!['outside','inside','both'].includes(tableType)) {
       return { success: false, error: 'ประเภทโต๊ะไม่ถูกต้อง' };
     }
 
@@ -747,12 +747,19 @@ function createBooking(payload) {
       if (status === 'cancelled' || status === 'no_show') continue;
 
       // ตรวจ Slot ชน
-      if (rDate === cleanDate && rTime === cleanTime && (rType === tableType || rType === 'both')) {
-        const tName = tableType === 'outside' ? 'โต๊ะกลมด้านนอก' : 'โต๊ะในห้อง';
-        return { 
-          success: false, 
-          error: `ขออภัย! ${tName} ในช่วงเวลานี้เพิ่งถูกนิสิตท่านอื่นจองสำเร็จไปแล้ว (มาก่อนได้ก่อน)` 
-        };
+      if (rDate === cleanDate && rTime === cleanTime) {
+        if (tableType === 'both' && (rType === 'outside' || rType === 'inside' || rType === 'both')) {
+          return { 
+            success: false, 
+            error: 'ขออภัย! มีโต๊ะในช่วงเวลานี้ถูกนิสิตท่านอื่นจองไปแล้ว ไม่สามารถเลือกเหมาทั้งห้องได้' 
+          };
+        } else if (rType === tableType || rType === 'both') {
+          const tName = tableType === 'outside' ? 'โต๊ะกลมด้านนอก' : 'โต๊ะในห้อง';
+          return { 
+            success: false, 
+            error: `ขออภัย! ${tName} ในช่วงเวลานี้เพิ่งถูกนิสิตท่านอื่นจองสำเร็จไปแล้ว (มาก่อนได้ก่อน)` 
+          };
+        }
       }
 
       // ตรวจ Quota ในวันเดียวกัน
