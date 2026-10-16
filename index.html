@@ -17,12 +17,12 @@
       --bdr: #e2e8f0;
       --bdr2: #cbd5e1;
       --txt: #0f172a;
-      --txt2: #475569;
-      --txt3: #94a3b8;
+      --txt2: #334155;
+      --txt3: #64748b;
       
       --free-bg: #ecfdf5;
       --free-bdr: #a7f3d0;
-      --free-txt: #059669;
+      --free-txt: #047857;
       --free-hover: #d1fae5;
 
       --ci-bg: #fff7ed;
@@ -31,19 +31,19 @@
       
       --full-bg: #fff1f2;
       --full-bdr: #fecdd3;
-      --full-txt: #e11d48;
+      --full-txt: #be123c;
       
       --sel-bg: #eff6ff;
       --sel-bdr: #3b82f6;
       --sel-txt: #1d4ed8;
 
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --primary-glow: rgba(79, 70, 229, 0.25);
+      --primary: #4338ca;
+      --primary-hover: #3730a3;
+      --primary-glow: rgba(67, 56, 202, 0.2);
       
       --sh1: 0 1px 3px rgba(0,0,0,0.05);
       --sh2: 0 4px 16px rgba(0,0,0,0.06);
-      --sh3: 0 12px 36px rgba(0,0,0,0.09);
+      --sh3: 0 12px 32px rgba(0,0,0,0.08);
     }
 
     [data-theme="dark"] {
@@ -55,8 +55,8 @@
       --bdr: rgba(255, 255, 255, 0.08);
       --bdr2: rgba(255, 255, 255, 0.16);
       --txt: #f8fafc;
-      --txt2: #94a3b8;
-      --txt3: #64748b;
+      --txt2: #cbd5e1;
+      --txt3: #94a3b8;
 
       --free-bg: rgba(16, 185, 129, 0.12);
       --free-bdr: rgba(16, 185, 129, 0.35);
@@ -95,7 +95,7 @@
       flex-direction: column;
       line-height: 1.5;
       padding-bottom: 90px;
-      transition: background 0.25s, color 0.25s;
+      transition: background 0.2s, color 0.2s;
     }
 
     /* Navbar */
@@ -107,7 +107,7 @@
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--bdr);
       padding: 0 16px;
-      min-height: 60px;
+      min-height: 58px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -116,7 +116,7 @@
     .nb-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .nb-beacon {
       width: 10px; height: 10px; border-radius: 50%;
-      background: #06b6d4; box-shadow: 0 0 12px #06b6d4;
+      background: #0284c7; box-shadow: 0 0 10px #0284c7;
       animation: bp 2.4s ease-in-out infinite; flex-shrink: 0;
     }
     @keyframes bp { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.3);opacity:.6} }
@@ -132,7 +132,7 @@
 
     .btn-action {
       height: 34px;
-      padding: 0 11px;
+      padding: 0 12px;
       border: 1px solid var(--bdr);
       background: var(--surf2);
       color: var(--txt);
@@ -144,7 +144,7 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      transition: 0.2s;
+      transition: 0.18s;
       white-space: nowrap;
     }
     .btn-action:hover { background: var(--surv); border-color: var(--bdr2); }
@@ -160,7 +160,7 @@
       max-width: 920px;
       width: 100%;
       margin: 0 auto;
-      padding: 16px 14px 24px;
+      padding: 14px 14px 24px;
       flex: 1;
     }
 
@@ -168,15 +168,15 @@
     .rules-card {
       background: var(--surf);
       border: 1px solid var(--bdr);
-      border-radius: 16px;
-      margin-bottom: 14px;
+      border-radius: 14px;
+      margin-bottom: 12px;
       box-shadow: var(--sh1);
       overflow: hidden;
       transition: 0.2s;
     }
     .rules-header {
-      padding: 12px 16px;
-      background: rgba(79, 70, 229, 0.05);
+      padding: 11px 14px;
+      background: rgba(67, 56, 202, 0.05);
       border-bottom: 1px solid var(--bdr);
       display: flex;
       align-items: center;
@@ -186,14 +186,14 @@
     }
     .rules-header-title {
       font-weight: 700;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .rules-toggle-btn {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--txt3);
       font-weight: 600;
       background: var(--surf);
@@ -202,10 +202,10 @@
       border: 1px solid var(--bdr);
     }
     .rules-body {
-      padding: 14px 16px;
+      padding: 12px 14px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
+      gap: 10px;
       font-size: 0.8rem;
       line-height: 1.6;
     }
@@ -216,17 +216,18 @@
       gap: 8px;
     }
     .rule-badge {
-      width: 22px; height: 22px; border-radius: 6px;
+      width: 20px; height: 20px; border-radius: 6px;
       background: var(--surf2); border: 1px solid var(--bdr);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+      font-size: 0.72rem; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+      color: var(--txt2);
     }
 
     /* Day Navigation Section */
     .day-nav-card {
       background: var(--surf);
       border: 1px solid var(--bdr);
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 12px 14px;
       margin-bottom: 12px;
       box-shadow: var(--sh1);
@@ -273,13 +274,13 @@
     }
     .cur-day-text {
       font-family: 'Bai Jamjuree', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.08rem;
       font-weight: 700;
       color: var(--txt);
     }
     .cur-day-sub {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--txt3);
     }
     .date-picker-hidden {
@@ -297,11 +298,11 @@
     }
     .day-chip {
       flex: 1;
-      min-width: 90px;
-      padding: 8px 4px;
+      min-width: 86px;
+      padding: 7px 4px;
       background: var(--surf2);
       border: 1px solid var(--bdr);
-      border-radius: 10px;
+      border-radius: 9px;
       text-align: center;
       cursor: pointer;
       transition: 0.18s;
@@ -316,10 +317,10 @@
       background: var(--primary);
       border-color: var(--primary);
       color: #fff;
-      box-shadow: 0 3px 10px var(--primary-glow);
+      box-shadow: 0 2px 8px var(--primary-glow);
     }
     .chip-name { font-size: 0.7rem; font-weight: 600; }
-    .chip-date { font-size: 1rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; line-height: 1.2; }
+    .chip-date { font-size: 0.98rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; line-height: 1.2; }
     .chip-free { font-size: 0.65rem; margin-top: 1px; opacity: 0.85; }
 
     /* Legend Bar */
@@ -353,12 +354,12 @@
     .slot-row {
       background: var(--surf);
       border: 1px solid var(--bdr);
-      border-radius: 14px;
-      padding: 9px 12px;
+      border-radius: 12px;
+      padding: 8px 12px;
       box-shadow: var(--sh1);
       display: grid;
-      grid-template-columns: 130px 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 125px 1fr 1fr;
+      gap: 8px;
       align-items: center;
       transition: 0.18s;
     }
@@ -374,14 +375,14 @@
       justify-content: center;
       background: var(--surf2);
       border: 1px solid var(--bdr);
-      border-radius: 10px;
-      padding: 7px 8px;
+      border-radius: 9px;
+      padding: 6px 8px;
       cursor: pointer;
       transition: 0.18s;
       user-select: none;
       text-align: center;
     }
-    .time-col:hover { background: rgba(79, 70, 229, 0.08); border-color: var(--primary); }
+    .time-col:hover { background: rgba(67, 56, 202, 0.08); border-color: var(--primary); }
     .time-col.selected-both {
       background: var(--sel-bg);
       border-color: var(--sel-bdr);
@@ -390,15 +391,15 @@
     }
     .tc-range {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem; font-weight: 700; line-height: 1.2;
+      font-size: 0.84rem; font-weight: 700; line-height: 1.2;
     }
-    .tc-sub { font-size: 0.66rem; color: var(--txt3); margin-top: 1px; }
+    .tc-sub { font-size: 0.65rem; color: var(--txt3); margin-top: 1px; }
     .time-col:hover .tc-sub { color: var(--primary); font-weight: 600; }
 
     /* Room Cards */
     .room-card {
-      border-radius: 10px;
-      padding: 9px 12px;
+      border-radius: 9px;
+      padding: 8px 12px;
       border: 1.5px solid transparent;
       cursor: pointer;
       transition: 0.18s;
@@ -411,9 +412,17 @@
     .room-card:active { transform: scale(0.98); }
 
     .rc-title {
-      display: flex; align-items: center; gap: 5px;
+      display: flex; align-items: center; gap: 6px;
       font-weight: 700; font-size: 0.8rem;
     }
+    .rc-tag {
+      font-size: 0.65rem; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+      font-family: 'Bai Jamjuree', sans-serif;
+    }
+    .rc-tag.out { background: rgba(14, 165, 233, 0.12); color: #0284c7; }
+    .rc-tag.in { background: rgba(99, 102, 241, 0.12); color: #4f46e5; }
+    .rc-tag.both { background: rgba(168, 85, 247, 0.12); color: #7c3aed; }
+
     .rc-status {
       font-size: 0.74rem; font-weight: 700;
       display: flex; align-items: center; gap: 4px;
@@ -472,7 +481,7 @@
     }
     .bb-info { display: flex; align-items: center; gap: 8px; }
     .bb-icon { font-size: 1.15rem; }
-    .bb-text-main { font-weight: 700; font-size: 0.9rem; color: var(--txt); }
+    .bb-text-main { font-weight: 700; font-size: 0.88rem; color: var(--txt); }
     .bb-text-sub { font-size: 0.74rem; color: var(--txt3); }
     .bb-actions { display: flex; align-items: center; gap: 8px; }
     .btn-clear-sel {
@@ -485,7 +494,7 @@
       height: 38px; padding: 0 18px; border: none;
       background: var(--primary); color: #fff; border-radius: 8px;
       font-size: 0.84rem; font-weight: 700; cursor: pointer;
-      box-shadow: 0 3px 12px var(--primary-glow); transition: 0.2s;
+      box-shadow: 0 3px 12px var(--primary-glow); transition: 0.18s;
     }
     .btn-book-now:hover { background: var(--primary-hover); }
     .btn-book-now:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
@@ -518,7 +527,7 @@
     .modal-ov.active { display: flex; }
     .modal {
       background: var(--surf); border: 1px solid var(--bdr);
-      border-radius: 18px; width: 100%; max-width: 480px;
+      border-radius: 16px; width: 100%; max-width: 480px;
       padding: 22px; box-shadow: var(--sh3);
       max-height: 90vh; overflow-y: auto;
     }
@@ -526,7 +535,7 @@
       display: flex; justify-content: space-between; align-items: flex-start;
       margin-bottom: 14px;
     }
-    .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--txt); }
+    .modal-title { font-size: 1.05rem; font-weight: 700; color: var(--txt); }
     .modal-sub { font-size: 0.78rem; color: var(--txt3); margin-top: 2px; }
     .btn-x {
       background: none; border: none; font-size: 1.2rem; cursor: pointer;
@@ -540,7 +549,7 @@
       width: 100%; height: 40px; border: 1px solid var(--bdr);
       background: var(--surf2); border-radius: 8px; padding: 0 11px;
       font-size: 0.86rem; color: var(--txt); font-family: inherit;
-      outline: none; transition: 0.2s;
+      outline: none; transition: 0.18s;
     }
     .fc:focus { border-color: var(--primary); background: var(--surf); }
     .fh { font-size: 0.72rem; color: var(--txt3); margin-top: 3px; }
@@ -570,7 +579,7 @@
       transition: 0.25s; z-index: 2000; box-shadow: var(--sh3);
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.success { background: #059669; }
+    .toast.success { background: #047857; }
     .toast.error { background: #e11d48; }
     .toast.info { background: #2563eb; }
 
@@ -608,7 +617,7 @@
     <section class="rules-card">
       <div class="rules-header" onclick="toggleRules()">
         <div class="rules-header-title">
-          <span>📋</span> กฎและกติกาการใช้งานห้อง 7 ดาว (คลิกเพื่ออ่าน)
+          <span>📋</span> กฎและกติกาการใช้งานห้อง 7 ดาว
         </div>
         <div class="rules-toggle-btn" id="rulesToggleBtn">ซ่อน/แสดง ▾</div>
       </div>
@@ -616,37 +625,37 @@
         <div class="rule-item">
           <div class="rule-badge">1</div>
           <div>
-            <strong>👥 ความจุของโต๊ะฝึกซ้อม:</strong><br>
-            • <strong>โต๊ะนอก (โต๊ะกลมนอก):</strong> สูงสุด <strong>3 คน</strong><br>
-            • <strong>โต๊ะใน (โต๊ะในห้อง):</strong> สูงสุด <strong>6 คน</strong><br>
-            • <strong>ใช้ทั้งห้อง:</strong> รวม <strong>9 คน</strong> (แตะที่ช่องเวลา)
+            <strong>ความจุโต๊ะฝึกซ้อม (เปิด 08:00 - 20:00 น.):</strong><br>
+            • <strong>โต๊ะกลมนอก:</strong> สูงสุด <strong>3 คน</strong><br>
+            • <strong>โต๊ะในห้อง:</strong> สูงสุด <strong>6 คน</strong><br>
+            • <strong>ทั้งสองโต๊ะ (ทั้งห้อง):</strong> รวม <strong>9 คน</strong> (แตะที่แถบเวลา)
           </div>
         </div>
 
         <div class="rule-item">
           <div class="rule-badge">2</div>
           <div>
-            <strong>📝 สิทธิ์และโควตาการจอง:</strong><br>
-            • ต้องระบุรหัสนิสิต 10 หลักอย่างน้อย 2 คนที่ร่วมซ้อมจริง<br>
-            • นิสิตแต่ละคนมีโควตาส่วนตัว <strong>ไม่เกิน 2 ชม./วัน</strong>
+            <strong>สิทธิ์และโควตาการจอง:</strong><br>
+            • ระบุรหัสนิสิต 10 หลักอย่างน้อย 2 คนที่ร่วมซ้อมจริง<br>
+            • โควตาส่วนตัว <strong>ไม่เกิน 2 ชม./คน/วัน</strong>
           </div>
         </div>
 
         <div class="rule-item">
           <div class="rule-badge">3</div>
           <div>
-            <strong>🔒 รหัส PIN 4 หลักคืออะไร?</strong><br>
-            • คือรหัสลับตัวเลข 4 หลักที่ <strong>ผู้จองตั้งขึ้นเอง</strong> ตอนจอง<br>
-            • ใช้สำหรับ <strong>ยืนยันเข้าห้อง (Check-in)</strong> และ <strong>กดยกเลิก</strong> เพื่อป้องกันผู้อื่นแอบลบรายการ
+            <strong>รหัส PIN 4 หลัก:</strong><br>
+            • คือรหัสลับตัวเลข 4 หลักที่ <strong>ผู้จองตั้งขึ้นเอง</strong><br>
+            • ใช้สำหรับ <strong>ยืนยันเข้าห้อง (Check-in)</strong> และ <strong>กดยกเลิก</strong> เพื่อป้องกันผู้อื่นแอบลบ
           </div>
         </div>
 
         <div class="rule-item">
           <div class="rule-badge">4</div>
           <div>
-            <strong>⏰ ยืนยันเข้าใช้งาน (Check-in) ภายใน 5 นาที:</strong><br>
-            • เมื่อถึงเวลาเริ่มซ้อม ต้องกดยืนยันตัวตน <strong>ภายใน 5 นาทีแรก</strong><br>
-            • หากไม่ยืนยัน ระบบจะตัดสิทธิ์และปล่อยให้เพื่อนคนอื่นจองต่อทันที
+            <strong>ยืนยันเข้าใช้งาน (Check-in) ภายใน 5 นาที:</strong><br>
+            • ต้องกดยืนยันตัวตน <strong>ภายใน 5 นาทีแรก</strong> ของรอบเวลาจอง<br>
+            • หากไม่ยืนยัน ระบบจะปล่อย Slot ว่างให้เพื่อนทันที
           </div>
         </div>
       </div>
@@ -658,7 +667,7 @@
         <div class="cur-day-box" onclick="document.getElementById('datePickerHidden').showPicker()">
           <div>
             <div class="cur-day-text" id="curDayText">วันจันทร์ที่ 19 ตุลาคม 2569</div>
-            <div class="cur-day-sub" id="curDaySub">แตะเพื่อเปลี่ยนวันที่ 📅</div>
+            <div class="cur-day-sub" id="curDaySub">แตะเพื่อเปลี่ยนวันที่ (เวลาทำการ 08:00 - 20:00 น.) 📅</div>
           </div>
           <input type="date" id="datePickerHidden" class="date-picker-hidden" onchange="onDatePicked(this.value)">
         </div>
@@ -684,7 +693,7 @@
         <div class="leg-it"><div class="leg-dot dot-sel"></div> ที่เลือก</div>
       </div>
       <div style="font-size:0.75rem; color:var(--txt3); font-weight:600">
-        โควตา: สูงสุด 2 ชม./คน/วัน
+        เวลาทำการ: 08:00 - 20:00 น. | โควตา: สูงสุด 2 ชม./คน/วัน
       </div>
     </div>
 
@@ -697,7 +706,7 @@
     <footer class="app-footer">
       <p>© 2026 คณะเภสัชศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย · ระบบจองห้อง 7 ดาว OSPE</p>
       <p class="footer-credit">
-        💻 ออกแบบและพัฒนาโดย: <strong>แม็กนั่ม (Maxnum)</strong> · หัวหน้าชั้นปีที่ 5 ปีการศึกษา 2569 คณะเภสัชศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย
+        ออกแบบและพัฒนาโดย: <strong>โครงการเตรียมความพร้อมสอบใบประกอบวิชาชีพฯ ปีการศึกษา 2569 คณะเภสัชศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย</strong>
       </p>
     </footer>
 
@@ -710,7 +719,7 @@
         <div class="bb-icon" id="bbIcon">ℹ️</div>
         <div>
           <div class="bb-text-main" id="bbTextMain">ยังไม่ได้เลือกช่วงเวลา แตะช่องสีเขียวเพื่อเลือก</div>
-          <div class="bb-text-sub" id="bbTextSub">เลือกโต๊ะนอก (3 คน), โต๊ะใน (6 คน) หรือแตะเวลาเพื่อเลือกทั้งห้อง (9 คน)</div>
+          <div class="bb-text-sub" id="bbTextSub">โต๊ะกลมนอก (3 คน) | โต๊ะในห้อง (6 คน) | แตะเวลาเพื่อเลือกทั้งสองโต๊ะ (9 คน)</div>
         </div>
       </div>
       <div class="bb-actions">
@@ -734,7 +743,7 @@
       <div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:10px; padding:10px; margin-bottom:12px; font-size:0.84rem">
         <div>📅 <strong>วันที่:</strong> <span id="mDate">—</span></div>
         <div>⏰ <strong>ช่วงเวลา:</strong> <span id="mTime">—</span></div>
-        <div>🚪 <strong>โต๊ะ/ห้อง:</strong> <span id="mTable">—</span></div>
+        <div>📍 <strong>โต๊ะที่เลือก:</strong> <span id="mTable">—</span></div>
       </div>
 
       <!-- Student 1 -->
@@ -779,7 +788,7 @@
       <div class="modal-hdr">
         <div>
           <div class="modal-title">📅 จองห้องแบบระบุวัน-เวลา</div>
-          <div class="modal-sub">เลือกวัน เวลา และโต๊ะที่ต้องการจองได้โดยตรง</div>
+          <div class="modal-sub">เลือกวัน เวลา (08:00 - 20:00 น.) และโต๊ะที่ต้องการจอง</div>
         </div>
         <button class="btn-x" onclick="closeQuickBookModal()">✕</button>
       </div>
@@ -790,20 +799,19 @@
       </div>
 
       <div class="fg">
-        <label class="fl">เลือกช่วงเวลา <span>*</span></label>
+        <label class="fl">เลือกช่วงเวลา (เปิดถึง 20:00 น.) <span>*</span></label>
         <select class="fc" id="qbSlot" onchange="checkQbAvailability()"></select>
       </div>
 
       <div class="fg">
         <label class="fl">เลือกโต๊ะฝึกซ้อม <span>*</span></label>
         <select class="fc" id="qbTableType" onchange="checkQbAvailability()">
-          <option value="outside">🚪 โต๊ะกลมนอก (ความจุ 3 คน)</option>
-          <option value="inside">🛏️ โต๊ะในห้อง (ความจุ 6 คน)</option>
-          <option value="both">🚪+🛏️ ทั้งห้องนอกและห้องใน (ความจุ 9 คน)</option>
+          <option value="outside">โต๊ะกลมนอก (ความจุ 3 คน)</option>
+          <option value="inside">โต๊ะในห้อง (ความจุ 6 คน)</option>
+          <option value="both">ทั้งสองโต๊ะ / ทั้งห้อง (ความจุ 9 คน)</option>
         </select>
       </div>
 
-      <!-- Quick Book Availability Alert -->
       <div id="qbAvailAlert" style="padding:8px 10px; border-radius:8px; font-size:0.8rem; margin-bottom:12px; display:none"></div>
 
       <!-- Quick Student 1 -->
@@ -860,7 +868,7 @@
       <div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:10px; padding:10px; margin-bottom:12px; font-size:0.84rem">
         <div>📅 <strong>วันที่:</strong> <span id="ciDateTxt">—</span></div>
         <div>⏰ <strong>ช่วงเวลา:</strong> <span id="ciTimeTxt">—</span></div>
-        <div>🚪 <strong>โต๊ะ:</strong> <span id="ciTableTxt">—</span></div>
+        <div>📍 <strong>โต๊ะ:</strong> <span id="ciTableTxt">—</span></div>
       </div>
 
       <div class="fg">
@@ -960,17 +968,17 @@
           <select class="fc" id="mockStartSlot"></select>
         </div>
         <div class="fg">
-          <label class="fl">เวลาสิ้นสุด <span>*</span></label>
+          <label class="fl">เวลาสิ้นสุด (ไม่เกิน 20:00 น.) <span>*</span></label>
           <select class="fc" id="mockEndSlot"></select>
         </div>
       </div>
 
       <div class="fg">
-        <label class="fl">พื้นที่ห้อง <span>*</span></label>
+        <label class="fl">พื้นที่โต๊ะ <span>*</span></label>
         <select class="fc" id="mockTableType">
-          <option value="both">🚪+🛏️ ทั้งห้องนอกและห้องใน (9 คน)</option>
-          <option value="outside">🚪 เฉพาะโต๊ะนอก (3 คน)</option>
-          <option value="inside">🛏️ เฉพาะโต๊ะใน (6 คน)</option>
+          <option value="both">ทั้งสองโต๊ะ / ทั้งห้อง (9 คน)</option>
+          <option value="outside">เฉพาะโต๊ะกลมนอก (3 คน)</option>
+          <option value="inside">เฉพาะโต๊ะในห้อง (6 คน)</option>
         </select>
       </div>
 
@@ -991,13 +999,14 @@
 
   <script>
     // ════════════════════════════════════════════════════════════════════
-    // CONFIG & STATE
+    // CONFIG & STATE (Hours limited to 08:00 - 20:00)
     // ════════════════════════════════════════════════════════════════════
     var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbw36j2cOXAEbiuTddOrSHe-epkHgGBMo66RoIE7p-j6x1n-rDo_cOKoHNSIbeS9DQ/exec';
     
+    // Slots 08:00 to 19:00 (19:00 slot ends at 20:00)
     var SLOTS = [
-      '08:00','09:00','10:00','11:00','12:00','13:00','14:00',
-      '15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'
+      '08:00','09:00','10:00','11:00','12:00','13:00',
+      '14:00','15:00','16:00','17:00','18:00','19:00'
     ];
     var DAYS_TH = ['จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์','อาทิตย์'];
     var DAYS_SHORT = ['จ.','อ.','พ.','พฤ.','ศ.','ส.','อา.'];
@@ -1193,7 +1202,7 @@
           bkData = data || {};
           renderAll();
         },
-        function(err) {
+        function() {
           renderAll();
         }
       );
@@ -1295,15 +1304,15 @@
         html += '    <div class="tc-sub">' + (isSelBoth ? '✓ เลือกทั้งห้อง' : 'แตะเลือกทั้งห้อง') + '</div>';
         html += '  </div>';
 
-        // 🚪 Outside (3 คน)
+        // Outside Table (3 คน)
         html += '  <div class="room-card ' + obState + '" onclick="onRoomCardClick(\'' + slot + '\', \'outside\', event)">';
-        html += '    <div class="rc-title"><span>🚪</span> โต๊ะนอก (3 คน)</div>';
+        html += '    <div class="rc-title"><span class="rc-tag out">นอก</span> โต๊ะกลมนอก (3 ที่นั่ง)</div>';
         html += '    <div class="rc-status">' + obText + '</div>';
         html += '  </div>';
 
-        // 🛏️ Inside (6 คน)
+        // Inside Table (6 คน)
         html += '  <div class="room-card ' + ibState + '" onclick="onRoomCardClick(\'' + slot + '\', \'inside\', event)">';
-        html += '    <div class="rc-title"><span>🛏️</span> โต๊ะใน (6 คน)</div>';
+        html += '    <div class="rc-title"><span class="rc-tag in">ใน</span> โต๊ะในห้อง (6 ที่นั่ง)</div>';
         html += '    <div class="rc-status">' + ibText + '</div>';
         html += '  </div>';
 
@@ -1333,7 +1342,7 @@
 
       if (entry) {
         var ids = (entry.studentIds || []).join(', ');
-        toast('ℹ️ ' + (type === 'outside' ? 'โต๊ะนอก' : 'โต๊ะใน') + ' มีผู้จองแล้ว (' + ids + ')', 'info');
+        toast('ℹ️ ' + (type === 'outside' ? 'โต๊ะกลมนอก' : 'โต๊ะในห้อง') + ' มีผู้จองแล้ว (' + ids + ')', 'info');
         return;
       }
 
@@ -1372,12 +1381,12 @@
       if (!activeSelection) {
         iconEl.textContent = 'ℹ️';
         mainEl.textContent = 'ยังไม่ได้เลือกช่วงเวลา แตะช่องสีเขียวเพื่อเลือก';
-        subEl.textContent = 'โต๊ะนอก (3 คน) | โต๊ะใน (6 คน) | แตะเวลาเพื่อเลือกทั้งห้อง (9 คน)';
+        subEl.textContent = 'โต๊ะกลมนอก (3 ที่นั่ง) | โต๊ะในห้อง (6 ที่นั่ง) | แตะเวลาเพื่อเลือกทั้งห้อง (9 ที่นั่ง)';
         clearBtn.style.display = 'none';
         bookBtn.disabled = true;
         bookBtn.textContent = '⚡ จองห้องนี้';
       } else {
-        var tName = activeSelection.type === 'both' ? 'ทั้งห้อง (9 คน)' : (activeSelection.type === 'outside' ? 'โต๊ะนอก (3 คน)' : 'โต๊ะใน (6 คน)');
+        var tName = activeSelection.type === 'both' ? 'ทั้งห้อง (9 ที่นั่ง)' : (activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)');
         var slotEnd = ('0' + (parseInt(activeSelection.slot) + 1)).slice(-2) + ':00';
         
         iconEl.textContent = '✨';
@@ -1396,7 +1405,7 @@
       if (!activeSelection) return;
       var slot = activeSelection.slot;
       var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
-      var tName = activeSelection.type === 'both' ? '🚪+🛏️ ทั้งห้องนอกและห้องใน (9 คน)' : (activeSelection.type === 'outside' ? '🚪 โต๊ะนอก (3 คน)' : '🛏️ โต๊ะในห้อง (6 คน)');
+      var tName = activeSelection.type === 'both' ? 'ทั้งห้องนอกและห้องใน (9 ที่นั่ง)' : (activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)');
 
       document.getElementById('mDate').textContent = formatThaiFull(selectedDate);
       document.getElementById('mTime').textContent = slot + ' - ' + slotEnd + ' น.';
@@ -1518,7 +1527,7 @@
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // QUICK BOOK MODAL (จองระบุวัน-เวลาโดยตรง)
+    // QUICK BOOK MODAL (08:00 - 20:00)
     // ════════════════════════════════════════════════════════════════════
     function openQuickBookModal() {
       var now = new Date();
@@ -1688,7 +1697,7 @@
     function openCiModal(ds, slot, type, entry) {
       ciCurrentEntry = { ds: ds, slot: slot, type: type, entry: entry };
       var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
-      var tName = type === 'outside' ? '🚪 โต๊ะนอก (3 คน)' : '🛏️ โต๊ะใน (6 คน)';
+      var tName = type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)';
 
       document.getElementById('ciDateTxt').textContent = formatThaiFull(selectedDate);
       document.getElementById('ciTimeTxt').textContent = slot + ' - ' + slotEnd + ' น.';
@@ -1804,7 +1813,7 @@
           var html = '';
           for (var i = 0; i < bookings.length; i++) {
             var b = bookings[i];
-            var tName = b.tableType === 'both' ? 'ทั้งห้อง (9 คน)' : (b.tableType === 'outside' ? 'โต๊ะนอก (3 คน)' : 'โต๊ะใน (6 คน)');
+            var tName = b.tableType === 'both' ? 'ทั้งสองโต๊ะ (9 ที่นั่ง)' : (b.tableType === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)');
             var statusTxt = b.status === 'checked_in' ? '<span style="color:var(--free-txt);font-weight:700">✓ ยืนยันแล้ว</span>' : '<span style="color:var(--ci-txt);font-weight:700">รอยืนยัน</span>';
 
             html += '<div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:10px; padding:10px; margin-bottom:8px">';
@@ -1872,7 +1881,7 @@
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // CENTRAL / MOCK EXAM
+    // CENTRAL / MOCK EXAM (08:00 - 20:00)
     // ════════════════════════════════════════════════════════════════════
     function openMockModal() {
       document.getElementById('mockDate').value = dStr(selectedDate);
