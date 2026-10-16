@@ -1257,14 +1257,15 @@
         for (var k in paramsOrData) {
           if (paramsOrData.hasOwnProperty(k)) query += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(paramsOrData[k]);
         }
-        fetch(GAS_API_URL + query, { redirect: 'follow' })
+        query += '&_t=' + Date.now();
+        fetch(GAS_API_URL + query, { redirect: 'follow', cache: 'no-store' })
           .then(function(r) { return r.json(); })
           .then(function(res) { if (onSuccess) onSuccess(res); })
           .catch(function(err) { handleLocalMock(action, paramsOrData, isPost, onSuccess); });
       } else {
-        var bodyData = JSON.stringify({ action: action, data: paramsOrData });
+        var bodyData = JSON.stringify({ action: action, data: paramsOrData, _t: Date.now() });
         fetch(GAS_API_URL, {
-          method: 'POST', redirect: 'follow',
+          method: 'POST', redirect: 'follow', cache: 'no-store',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: bodyData
         })
@@ -1669,6 +1670,19 @@
       var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
       var tName = activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)';
 
+      var ds = dStr(selectedDate);
+      var key = ds + '_' + slot;
+      var rowData = bkData[key] || {};
+      var entry = rowData[activeSelection.type];
+
+      // Instant pre-check: Was this table taken while browsing?
+      if (entry && (entry.status === 'active' || entry.status === 'checked_in')) {
+        toast('⚠️ ขออภัยครับ โต๊ะนี้เพิ่งมีเพื่อนร่วมรุ่นจองไปเมื่อสักครู่', 'error');
+        clearSelection();
+        loadData();
+        return;
+      }
+
       document.getElementById('mDate').textContent = formatThaiFull(selectedDate);
       document.getElementById('mTime').textContent = slot + ' - ' + slotEnd + ' น.';
       document.getElementById('mTable').textContent = tName;
@@ -1746,6 +1760,20 @@
       var s1 = document.getElementById('sid1').value.trim();
       var s2 = document.getElementById('sid2').value.trim();
       var pin = document.getElementById('bookPin').value.trim();
+
+      var ds = dStr(selectedDate);
+      var key = ds + '_' + activeSelection.slot;
+      var rowData = bkData[key] || {};
+      var entry = rowData[activeSelection.type];
+
+      // Instant pre-submit check
+      if (entry && (entry.status === 'active' || entry.status === 'checked_in')) {
+        toast('⚠️ ขออภัยครับ โต๊ะนี้เพิ่งมีเพื่อนร่วมรุ่นจองสำเร็จไปแล้ว', 'error');
+        closeBookModal();
+        clearSelection();
+        loadData();
+        return;
+      }
 
       var v1 = /^\d{10}$/.test(s1);
       var v2 = /^\d{10}$/.test(s2);
@@ -2329,11 +2357,20 @@
       renderAll();
       loadData();
       startTicker();
+      // Fast polling (every 6 seconds) to keep all devices instantly synchronized
       setInterval(function() {
         if (!isLoadingData && !document.hidden) {
           loadData();
         }
-      }, 15000);
+      }, 6000);
+    });
+
+    // Instant sync when user switches back to this tab/window
+    window.addEventListener('focus', function() {
+      if (!isLoadingData) loadData();
+    });
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && !isLoadingData) loadData();
     });
   </script>
 </body>
