@@ -164,19 +164,20 @@
       flex: 1;
     }
 
-    /* Rules & Guidelines Card */
+    /* Rules & Guidelines Section (Bottom Placement & Premium UI) */
     .rules-card {
       background: var(--surf);
       border: 1px solid var(--bdr);
-      border-radius: 14px;
-      margin-bottom: 12px;
-      box-shadow: var(--sh1);
+      border-radius: 16px;
+      margin-top: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--sh2);
       overflow: hidden;
-      transition: 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .rules-header {
-      padding: 11px 14px;
-      background: rgba(67, 56, 202, 0.05);
+      padding: 14px 18px;
+      background: linear-gradient(135deg, rgba(67, 56, 202, 0.05), rgba(99, 102, 241, 0.02));
       border-bottom: 1px solid var(--bdr);
       display: flex;
       align-items: center;
@@ -185,42 +186,178 @@
       user-select: none;
     }
     .rules-header-title {
-      font-weight: 700;
-      font-size: 0.86rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rules-title-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(67, 56, 202, 0.1);
       color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+    .rules-title-main {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--txt);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rules-badge-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(67, 56, 202, 0.1);
+      color: var(--primary);
+      border: 1px solid rgba(67, 56, 202, 0.2);
+    }
+    .rules-title-sub {
+      font-size: 0.76rem;
+      color: var(--txt3);
+      margin-top: 2px;
+      font-weight: 500;
     }
     .rules-toggle-btn {
       font-size: 0.74rem;
-      color: var(--txt3);
+      color: var(--txt2);
       font-weight: 600;
       background: var(--surf);
-      padding: 2px 8px;
-      border-radius: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
       border: 1px solid var(--bdr);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .rules-toggle-btn:hover {
+      background: var(--surf2);
+      border-color: var(--bdr2);
+      color: var(--primary);
     }
     .rules-body {
-      padding: 12px 14px;
+      padding: 16px 18px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 10px;
-      font-size: 0.8rem;
-      line-height: 1.6;
+      gap: 14px;
     }
     .rules-body.collapsed { display: none; }
+    
     .rule-item {
+      background: var(--surf2);
+      border: 1px solid var(--bdr);
+      border-radius: 12px;
+      padding: 14px;
       display: flex;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .rule-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--sh1);
+      border-color: var(--bdr2);
+    }
+    .rule-item-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
     }
-    .rule-badge {
-      width: 20px; height: 20px; border-radius: 6px;
-      background: var(--surf2); border: 1px solid var(--bdr);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    .rule-badge-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rule-num-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .rule-item-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--txt);
+    }
+    .rule-chip-tag {
+      font-size: 0.67rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .rule-theme-blue .rule-num-badge { background: #e0e7ff; color: #3730a3; }
+    .rule-theme-blue .rule-chip-tag { background: #e0e7ff; color: #3730a3; }
+    .rule-theme-emerald .rule-num-badge { background: #d1fae5; color: #065f46; }
+    .rule-theme-emerald .rule-chip-tag { background: #d1fae5; color: #065f46; }
+    .rule-theme-amber .rule-num-badge { background: #fef3c7; color: #92400e; }
+    .rule-theme-amber .rule-chip-tag { background: #fef3c7; color: #92400e; }
+    .rule-theme-rose .rule-num-badge { background: #ffe4e6; color: #9f1239; }
+    .rule-theme-rose .rule-chip-tag { background: #ffe4e6; color: #9f1239; }
+
+    [data-theme="dark"] .rule-theme-blue .rule-num-badge { background: rgba(99, 102, 241, 0.22); color: #a5b4fc; }
+    [data-theme="dark"] .rule-theme-blue .rule-chip-tag { background: rgba(99, 102, 241, 0.22); color: #a5b4fc; }
+    [data-theme="dark"] .rule-theme-emerald .rule-num-badge { background: rgba(16, 185, 129, 0.22); color: #6ee7b7; }
+    [data-theme="dark"] .rule-theme-emerald .rule-chip-tag { background: rgba(16, 185, 129, 0.22); color: #6ee7b7; }
+    [data-theme="dark"] .rule-theme-amber .rule-num-badge { background: rgba(245, 158, 11, 0.22); color: #fcd34d; }
+    [data-theme="dark"] .rule-theme-amber .rule-chip-tag { background: rgba(245, 158, 11, 0.22); color: #fcd34d; }
+    [data-theme="dark"] .rule-theme-rose .rule-num-badge { background: rgba(244, 63, 94, 0.22); color: #fda4af; }
+    [data-theme="dark"] .rule-theme-rose .rule-chip-tag { background: rgba(244, 63, 94, 0.22); color: #fda4af; }
+
+    .rule-content-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.79rem;
       color: var(--txt2);
+      line-height: 1.5;
+    }
+    .rule-point {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .rule-bullet {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--txt3);
+      flex-shrink: 0;
+      transform: translateY(-2px);
+    }
+    .rule-point strong {
+      color: var(--txt);
+      font-weight: 700;
+    }
+    .rules-footer-note {
+      padding: 9px 18px;
+      background: var(--surf2);
+      border-top: 1px solid var(--bdr);
+      font-size: 0.74rem;
+      color: var(--txt3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     /* Day Navigation Section */
@@ -614,54 +751,6 @@
 
   <main class="container">
 
-    <!-- Rules & Regulations Card -->
-    <section class="rules-card">
-      <div class="rules-header" onclick="toggleRules()">
-        <div class="rules-header-title">
-          <span>📋</span> กฎและกติกาการใช้งานห้อง 7 ดาว
-        </div>
-        <div class="rules-toggle-btn" id="rulesToggleBtn">ซ่อน/แสดง ▾</div>
-      </div>
-      <div class="rules-body" id="rulesBody">
-        <div class="rule-item">
-          <div class="rule-badge">1</div>
-          <div>
-            <strong>ความจุโต๊ะฝึกซ้อม (เปิด 08:00 - 20:00 น.):</strong><br>
-            • <strong>โต๊ะกลมนอก:</strong> สูงสุด <strong>3 คน</strong><br>
-            • <strong>โต๊ะในห้อง:</strong> สูงสุด <strong>6 คน</strong><br>
-            • <strong>ทั้งสองโต๊ะ (ทั้งห้อง):</strong> รวม <strong>9 คน</strong> (แตะที่แถบเวลา)
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <div class="rule-badge">2</div>
-          <div>
-            <strong>สิทธิ์และโควตาการจอง:</strong><br>
-            • ระบุรหัสนิสิต 10 หลักอย่างน้อย 2 คนที่ร่วมซ้อมจริง<br>
-            • โควตาส่วนตัว <strong>ไม่เกิน 2 ชม./คน/วัน</strong>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <div class="rule-badge">3</div>
-          <div>
-            <strong>รหัส PIN 4 หลัก:</strong><br>
-            • คือรหัสลับตัวเลข 4 หลักที่ <strong>ผู้จองตั้งขึ้นเอง</strong><br>
-            • ใช้สำหรับ <strong>ยืนยันเข้าห้อง (Check-in)</strong> และ <strong>กดยกเลิก</strong> เพื่อป้องกันผู้อื่นแอบลบ
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <div class="rule-badge">4</div>
-          <div>
-            <strong>ยืนยันเข้าใช้งาน (Check-in) ภายใน 5 นาที:</strong><br>
-            • ต้องกดยืนยันตัวตน <strong>ภายใน 5 นาทีแรก</strong> ของรอบเวลาจอง<br>
-            • หากไม่ยืนยัน ระบบจะปล่อย Slot ว่างให้เพื่อนทันที
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Day Navigation Card -->
     <div class="day-nav-card">
       <div class="day-nav-top">
@@ -702,6 +791,130 @@
     <div class="slots-container" id="slotsList">
       <!-- Generated dynamically -->
     </div>
+
+    <!-- Rules & Regulations Section (Placed at bottom for streamlined ergonomics) -->
+    <section class="rules-card" id="rulesCard">
+      <div class="rules-header" onclick="toggleRules()">
+        <div class="rules-header-title">
+          <div class="rules-title-icon">📋</div>
+          <div>
+            <div class="rules-title-main">
+              กฎและกติกาการใช้งานห้อง 7 ดาว OSPE
+              <span class="rules-badge-pill">โปรดอ่านก่อนจอง</span>
+            </div>
+            <div class="rules-title-sub">เปิดทำการ 08:00 - 20:00 น. เพื่อสิทธิ์และความเท่าเทียมของเพื่อนร่วมรุ่น RxCU</div>
+          </div>
+        </div>
+        <button class="rules-toggle-btn" id="rulesToggleBtn" type="button">ซ่อน ▴</button>
+      </div>
+
+      <div class="rules-body" id="rulesBody">
+        <!-- Rule 1: Capacity & Hours -->
+        <div class="rule-item rule-theme-blue">
+          <div class="rule-item-hdr">
+            <div class="rule-badge-wrap">
+              <div class="rule-num-badge">1</div>
+              <div class="rule-item-title">ความจุโต๊ะฝึกซ้อม</div>
+            </div>
+            <span class="rule-chip-tag">เปิด 08:00 - 20:00 น.</span>
+          </div>
+          <div class="rule-content-list">
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div><strong>โต๊ะกลมนอก:</strong> รองรับสูงสุด <strong>3 คน</strong></div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div><strong>โต๊ะในห้อง:</strong> รองรับสูงสุด <strong>6 คน</strong></div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div><strong>เหมาทั้งห้อง (2 โต๊ะ):</strong> รวม <strong>9 คน</strong> (แตะที่แถบเวลาซ้ายสุด)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 2: Eligibility & Quota -->
+        <div class="rule-item rule-theme-emerald">
+          <div class="rule-item-hdr">
+            <div class="rule-badge-wrap">
+              <div class="rule-num-badge">2</div>
+              <div class="rule-item-title">สิทธิ์และโควตาการจอง</div>
+            </div>
+            <span class="rule-chip-tag">สูงสุด 2 ชม./วัน</span>
+          </div>
+          <div class="rule-content-list">
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>ต้องระบุรหัสนิสิต 10 หลักอย่างน้อย <strong>2 คน</strong> ที่ร่วมฝึกซ้อมจริง</div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>โควตาส่วนตัวของนิสิตแต่ละคน <strong>ไม่เกิน 2 ชม./คน/วัน</strong></div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>ระบบตัดโควตาผู้ร่วมซ้อมทุกคนในกลุ่มตามจริง</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 3: 4-Digit PIN -->
+        <div class="rule-item rule-theme-amber">
+          <div class="rule-item-hdr">
+            <div class="rule-badge-wrap">
+              <div class="rule-num-badge">3</div>
+              <div class="rule-item-title">รหัส PIN 4 หลัก</div>
+            </div>
+            <span class="rule-chip-tag">ความปลอดภัย</span>
+          </div>
+          <div class="rule-content-list">
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>คือรหัสลับตัวเลข 4 หลักที่ <strong>ผู้จองตั้งขึ้นเอง</strong> ขณะจอง</div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>ใช้สำหรับ <strong>ยืนยันเข้าห้อง (Check-in)</strong> และ <strong>กดยกเลิก</strong></div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>ป้องกันบุคคลอื่นแอบยกเลิกหรือสวมสิทธิ์การจองของกลุ่มเรา</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 4: Check-in Window -->
+        <div class="rule-item rule-theme-rose">
+          <div class="rule-item-hdr">
+            <div class="rule-badge-wrap">
+              <div class="rule-num-badge">4</div>
+              <div class="rule-item-title">ยืนยันเข้าใช้งาน (Check-in)</div>
+            </div>
+            <span class="rule-chip-tag">ภายใน 5 นาทีแรก</span>
+          </div>
+          <div class="rule-content-list">
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>ต้องกดยืนยันตัวตน <strong>ภายใน 5 นาทีแรก</strong> ของรอบเวลาจอง</div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>หากไม่ยืนยัน ระบบจะปรับเป็น <strong>No-Show</strong> และปล่อย Slot ว่างให้เพื่อนทันที</div>
+            </div>
+            <div class="rule-point">
+              <span class="rule-bullet"></span>
+              <div>หากติดภารกิจกระทันหัน กรุณากดยกเลิกล่วงหน้าเพื่อแบ่งปันสิทธิ์แก่เพื่อน</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-footer-note">
+        <div>💡 <em>เปิดให้บริการฝึกซ้อมทุกวันระหว่างเวลา 08:00 - 20:00 น.</em></div>
+        <div>✨ โครงการเตรียมความพร้อมสอบใบประกอบวิชาชีพฯ ปีการศึกษา 2569</div>
+      </div>
+    </section>
 
     <!-- Footer -->
     <footer class="app-footer">
