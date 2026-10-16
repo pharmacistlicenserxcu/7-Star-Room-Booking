@@ -505,7 +505,7 @@
       opacity: 0.45; background: var(--surf2); pointer-events: none;
     }
 
-    /* Time Column / Both Button */
+    /* Time Column Badge */
     .time-col {
       display: flex;
       flex-direction: column;
@@ -514,24 +514,15 @@
       border: 1px solid var(--bdr);
       border-radius: 9px;
       padding: 6px 8px;
-      cursor: pointer;
-      transition: 0.18s;
       user-select: none;
       text-align: center;
-    }
-    .time-col:hover { background: rgba(67, 56, 202, 0.08); border-color: var(--primary); }
-    .time-col.selected-both {
-      background: var(--sel-bg);
-      border-color: var(--sel-bdr);
-      color: var(--sel-txt);
-      box-shadow: 0 0 0 2px var(--sel-bdr);
     }
     .tc-range {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.84rem; font-weight: 700; line-height: 1.2;
+      color: var(--txt);
     }
     .tc-sub { font-size: 0.65rem; color: var(--txt3); margin-top: 1px; }
-    .time-col:hover .tc-sub { color: var(--primary); font-weight: 600; }
 
     /* Room Cards */
     .room-card {
@@ -829,7 +820,7 @@
             </div>
             <div class="rule-point">
               <span class="rule-bullet"></span>
-              <div><strong>เหมาทั้งห้อง (2 โต๊ะ):</strong> รวม <strong>9 คน</strong> (แตะที่แถบเวลาซ้ายสุด)</div>
+              <div>หากต้องการใช้ทั้งสองโต๊ะ กรุณา<strong>กดจองแยกทีละโต๊ะ</strong></div>
             </div>
           </div>
         </div>
@@ -932,13 +923,13 @@
       <div class="bb-info">
         <div class="bb-icon" id="bbIcon">ℹ️</div>
         <div>
-          <div class="bb-text-main" id="bbTextMain">ยังไม่ได้เลือกช่วงเวลา แตะช่องสีเขียวเพื่อเลือก</div>
-          <div class="bb-text-sub" id="bbTextSub">โต๊ะกลมนอก (3 คน) | โต๊ะในห้อง (6 คน) | แตะเวลาเพื่อเลือกทั้งสองโต๊ะ (9 คน)</div>
+          <div class="bb-text-main" id="bbTextMain">ยังไม่ได้เลือกโต๊ะ แตะช่องสีเขียวเพื่อเลือก</div>
+          <div class="bb-text-sub" id="bbTextSub">โต๊ะกลมนอก (สูงสุด 3 คน) | โต๊ะในห้อง (สูงสุด 6 คน)</div>
         </div>
       </div>
       <div class="bb-actions">
         <button class="btn-clear-sel" id="btnClearSel" style="display:none" onclick="clearSelection()">✕ ล้าง</button>
-        <button class="btn-book-now" id="btnBookNow" disabled onclick="onProceedBooking()">⚡ จองห้องนี้</button>
+        <button class="btn-book-now" id="btnBookNow" disabled onclick="onProceedBooking()">⚡ จองโต๊ะนี้</button>
       </div>
     </div>
   </div>
@@ -1521,7 +1512,8 @@
 
         var isSelBoth = activeSelection && activeSelection.slot === slot && activeSelection.type === 'both';
         var isSelOut = isSelBoth || (activeSelection && activeSelection.slot === slot && activeSelection.type === 'outside');
-        var isSelIn = isSelBoth || (activeSelection && activeSelection.slot === slot && activeSelection.type === 'inside');
+        var isSelOut = activeSelection && activeSelection.slot === slot && activeSelection.type === 'outside';
+        var isSelIn = activeSelection && activeSelection.slot === slot && activeSelection.type === 'inside';
 
         // Outside Table (3 คน)
         var obEntry = rowData.outside;
@@ -1547,14 +1539,12 @@
         else if (ibIsCi) { ibState = 'state-ci'; ibText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_in">' + fmtCd(ibCiLeft) + '</span>'; }
         else if (ibIsFull) { ibState = 'state-full'; ibText = '🔴 จองแล้ว'; }
 
-        var timeColCls = 'time-col' + (isSelBoth ? ' selected-both' : '');
-
         html += '<div class="' + rowCls + '">';
         
-        // Time / Select Both (9 คน)
-        html += '  <div class="' + timeColCls + '" onclick="toggleSelectSlot(\'' + slot + '\', \'both\', ' + (!obEntry && !ibEntry && !past) + ')" title="แตะเพื่อเลือกทั้งห้อง (9 คน)">';
+        // Time Badge (Pure display)
+        html += '  <div class="time-col">';
         html += '    <div class="tc-range">' + slot + ' - ' + slotEnd + '</div>';
-        html += '    <div class="tc-sub">' + (isSelBoth ? '✓ เลือกทั้งห้อง' : 'แตะเลือกทั้งห้อง') + '</div>';
+        html += '    <div class="tc-sub">1 ชั่วโมง</div>';
         html += '  </div>';
 
         // Outside Table (3 คน)
@@ -1599,15 +1589,10 @@
         return;
       }
 
-      toggleSelectSlot(slot, type, true);
+      toggleSelectSlot(slot, type);
     }
 
-    function toggleSelectSlot(slot, type, canSelect) {
-      if (!canSelect && type === 'both') {
-        toast('⚠️ ไม่สามารถเลือกทั้งห้องได้ เนื่องจากมีโต๊ะที่ไม่ว่าง', 'error');
-        return;
-      }
-
+    function toggleSelectSlot(slot, type) {
       if (activeSelection && activeSelection.slot === slot && activeSelection.type === type) {
         activeSelection = null;
       } else {
@@ -1633,13 +1618,13 @@
 
       if (!activeSelection) {
         iconEl.textContent = 'ℹ️';
-        mainEl.textContent = 'ยังไม่ได้เลือกช่วงเวลา แตะช่องสีเขียวเพื่อเลือก';
-        subEl.textContent = 'โต๊ะกลมนอก (3 ที่นั่ง) | โต๊ะในห้อง (6 ที่นั่ง) | แตะเวลาเพื่อเลือกทั้งห้อง (9 ที่นั่ง)';
+        mainEl.textContent = 'ยังไม่ได้เลือกโต๊ะ แตะช่องสีเขียวเพื่อเลือก';
+        subEl.textContent = 'โต๊ะกลมนอก (สูงสุด 3 ที่นั่ง) | โต๊ะในห้อง (สูงสุด 6 ที่นั่ง)';
         clearBtn.style.display = 'none';
         bookBtn.disabled = true;
-        bookBtn.textContent = '⚡ จองห้องนี้';
+        bookBtn.textContent = '⚡ จองโต๊ะนี้';
       } else {
-        var tName = activeSelection.type === 'both' ? 'ทั้งห้อง (9 ที่นั่ง)' : (activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)');
+        var tName = activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)';
         var slotEnd = ('0' + (parseInt(activeSelection.slot) + 1)).slice(-2) + ':00';
         
         iconEl.textContent = '✨';
@@ -1647,7 +1632,7 @@
         subEl.textContent = '📅 ' + formatThaiFull(selectedDate);
         clearBtn.style.display = 'block';
         bookBtn.disabled = false;
-        bookBtn.textContent = '⚡ ยืนยันจองห้องนี้ ›';
+        bookBtn.textContent = '⚡ ยืนยันจองโต๊ะนี้ ›';
       }
     }
 
@@ -1658,7 +1643,7 @@
       if (!activeSelection) return;
       var slot = activeSelection.slot;
       var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
-      var tName = activeSelection.type === 'both' ? 'ทั้งห้องนอกและห้องใน (9 ที่นั่ง)' : (activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)');
+      var tName = activeSelection.type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)';
 
       document.getElementById('mDate').textContent = formatThaiFull(selectedDate);
       document.getElementById('mTime').textContent = slot + ' - ' + slotEnd + ' น.';
