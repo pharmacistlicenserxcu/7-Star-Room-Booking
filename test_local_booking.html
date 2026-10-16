@@ -773,8 +773,10 @@
         <div class="leg-it"><div class="leg-dot dot-full"></div> จองแล้ว</div>
         <div class="leg-it"><div class="leg-dot dot-sel"></div> ที่เลือก</div>
       </div>
-      <div style="font-size:0.75rem; color:var(--txt3); font-weight:600">
-        เวลาทำการ: 08:00 - 20:00 น. | โควตา: สูงสุด 2 ชม./คน/วัน
+      <div style="display:flex; align-items:center; gap:8px; font-size:0.74rem; color:var(--txt3); font-weight:600">
+        <span id="syncStatusIndicator" style="transition:0.2s">🟢 เชื่อมต่อชีตสด (อัปเดตอัตโนมัติ)</span>
+        <span>·</span>
+        <span>08:00 - 20:00 น.</span>
       </div>
     </div>
 
@@ -1408,11 +1410,31 @@
       if (btn) btn.textContent = isCollapsed ? 'แสดง ▾' : 'ซ่อน ▴';
     }
 
+    var isLoadingData = false;
+    function updateSyncStatus(status) {
+      var el = document.getElementById('syncStatusIndicator');
+      if (!el) return;
+      if (status === 'syncing') {
+        el.innerHTML = '🔄 กำลังดึงข้อมูลล่าสุด...';
+        el.style.opacity = '1';
+      } else if (status === 'synced') {
+        el.innerHTML = '🟢 เชื่อมต่อชีตสด (อัปเดตอัตโนมัติ)';
+        el.style.opacity = '0.85';
+      } else {
+        el.innerHTML = '⚠️ ข้อมูลแคชล่าสุด';
+        el.style.opacity = '0.85';
+      }
+    }
+
     function loadData() {
       var monday = getMonday(selectedDate);
       var mStr = dStr(monday);
+      isLoadingData = true;
+      updateSyncStatus('syncing');
       callGasApi('getBookingsForWeek', { date: mStr }, false,
         function(data) {
+          isLoadingData = false;
+          updateSyncStatus('synced');
           if (data && typeof data === 'object') {
             for (var k in data) {
               if (data.hasOwnProperty(k)) {
@@ -1423,6 +1445,8 @@
           renderAll();
         },
         function(err) {
+          isLoadingData = false;
+          updateSyncStatus('error');
           console.warn('loadData failed, rendering cached/mock:', err);
           renderAll();
         }
@@ -1749,8 +1773,19 @@
         function(res) {
           btn.disabled = false; btn.textContent = 'ยืนยันการจอง';
           if (res && res.success) {
+            var bId = res.bookingId || ('BK-' + Date.now());
+            var dateKey = payload.date + '_' + payload.timeSlot;
+            if (!bkData[dateKey]) bkData[dateKey] = {};
+            bkData[dateKey][payload.tableType] = {
+              bookingId: bId,
+              studentIds: payload.studentIds,
+              bookedBy: payload.studentIds[0],
+              bookedAt: new Date().toString(),
+              status: 'active'
+            };
             closeBookModal();
             clearSelection();
+            renderAll();
             toast('🎉 จองสำเร็จ! ยืนยันตัวตนใน 5 นาทีแรกของเวลาจอง', 'success');
             loadData();
           } else {
@@ -1915,7 +1950,18 @@
         function(res) {
           btn.disabled = false; btn.textContent = 'ยืนยันการจอง';
           if (res && res.success) {
+            var bId = res.bookingId || ('BK-' + Date.now());
+            var dateKey = payload.date + '_' + payload.timeSlot;
+            if (!bkData[dateKey]) bkData[dateKey] = {};
+            bkData[dateKey][payload.tableType] = {
+              bookingId: bId,
+              studentIds: payload.studentIds,
+              bookedBy: payload.studentIds[0],
+              bookedAt: new Date().toString(),
+              status: 'active'
+            };
             closeQuickBookModal();
+            renderAll();
             toast('🎉 จองสำเร็จ! ยืนยันตัวตนใน 5 นาทีแรกของเวลาจอง', 'success');
             loadData();
           } else {
@@ -2193,7 +2239,23 @@
         function(res) {
           btn.disabled = false; btn.textContent = 'ยืนยันจองส่วนกลาง';
           if (res && res.success) {
+            var targetTables = (table === 'both') ? ['outside', 'inside'] : [table];
+            for (var h = sH; h < eH; h++) {
+              var sSlot = ('0' + h).slice(-2) + ':00';
+              var dKey = date + '_' + sSlot;
+              if (!bkData[dKey]) bkData[dKey] = {};
+              targetTables.forEach(function(t) {
+                bkData[dKey][t] = {
+                  bookingId: 'MOCK-' + date + '-' + sSlot + '-' + t,
+                  studentIds: [title],
+                  bookedBy: 'ส่วนกลาง',
+                  bookedAt: new Date().toString(),
+                  status: 'checked_in'
+                };
+              });
+            }
             closeMockModal();
+            renderAll();
             toast('🏛️ บันทึกการจองส่วนกลางสำเร็จ!', 'success');
             loadData();
           } else {
@@ -2266,6 +2328,12 @@
     window.addEventListener('DOMContentLoaded', function() {
       renderAll();
       loadData();
+      startTicker();
+      setInterval(function() {
+        if (!isLoadingData && !document.hidden) {
+          loadData();
+        }
+      }, 15000);
     });
   </script>
 </body>
