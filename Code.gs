@@ -49,6 +49,8 @@ function doGet(e) {
         result = getDayQuota(params.date, params.studentId);
       } else if (action === 'getMyBookings') {
         result = getMyBookings(params.studentId);
+      } else if (action === 'clearTestBookings') {
+        result = clearTestBookings(params.pin);
       } else {
         result = { error: 'Unknown action: ' + action };
       }
@@ -1218,4 +1220,33 @@ function autoExpireBookings_() {
   } catch (e) {
     Logger.log('autoExpireBookings_ error: ' + e.toString());
   }
+}
+
+/**
+ * clearTestBookings(pin)
+ * ล้างข้อมูลการจองทดสอบของวันที่ 2026-10-25 หรือที่มีคำว่า 'ทดสอบ'
+ */
+function clearTestBookings(pin) {
+  const adminPin = String(pin || '').trim();
+  if (adminPin !== 'rxcu' && adminPin !== 'ple2569' && adminPin !== 'maxnum' && adminPin !== '1234') {
+    return { success: false, error: 'รหัส PIN ผู้ดูแลระบบไม่ถูกต้อง' };
+  }
+  const ss = getSpreadsheet();
+  if (!ss) return { success: false, error: 'ไม่สามารถเปิด Google Sheet ได้' };
+  const sheet = ss.getSheetByName(CONFIG.sheets.roomBookings);
+  if (!sheet) return { success: false, error: 'ไม่พบ Sheet RoomBookings' };
+
+  const data = sheet.getDataRange().getValues();
+  let deletedCount = 0;
+  for (let i = data.length - 1; i >= 1; i--) {
+    const row = data[i];
+    const rDate = _normalizeDateStr(row[1]);
+    const rSids = String(row[4] || '');
+    const rBy   = String(row[5] || '');
+    if (rDate === '2026-10-25' && (rSids.includes('ทดสอบ') || rBy.includes('ส่วนกลาง') || rSids.includes('Mock Exam'))) {
+      sheet.deleteRow(i + 1);
+      deletedCount++;
+    }
+  }
+  return { success: true, deleted: deletedCount };
 }
