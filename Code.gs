@@ -945,14 +945,16 @@ function createMockCentralBooking(payload) {
 
 /**
  * cancelBooking(bookingId, studentId, pin)
- * ยกเลิกการจอง พร้อมตรวจสอบ PIN 4 หลัก
+ * ยกเลิกการจอง:
+ * 1. หากเวลาปัจจุบันเกิน 15 นาทีจากเวลาเริ่ม Slot และยังไม่ได้กดยืนยัน (active) -> อนุญาตให้เพื่อนคนอื่นกดยกเลิกได้ทันทีโดยไม่ต้องใส่รหัส PIN
+ * 2. ในกรณีปกติ (ช่วง 0-15 นาทีแรก หรือจองล่วงหน้า) -> ต้องระบุรหัสนิสิตในกลุ่มและรหัส PIN 4 หลักที่ถูกต้อง
  */
 function cancelBooking(bookingId, studentId, pin) {
   const lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
-    const bIdTrim = String(bookingId).trim().toUpperCase();
-    const sidTrim = String(studentId).trim();
+    const bIdTrim = String(bookingId || '').trim().toUpperCase();
+    const sidTrim = String(studentId || '').trim();
     const pinTrim = String(pin || '').trim();
 
     const ss = getSpreadsheet();
@@ -966,6 +968,7 @@ function cancelBooking(bookingId, studentId, pin) {
     const headers = data[0];
     const pinColIdx    = headers.indexOf('pin');
     const statusColIdx = headers.indexOf('status') !== -1 ? headers.indexOf('status') : 8;
+    const now = new Date();
 
     for (let i = 1; i < data.length; i++) {
       const row    = data[i];
@@ -983,9 +986,48 @@ function cancelBooking(bookingId, studentId, pin) {
       if (status === 'cancelled') {
         return { success: false, error: 'การจองนี้ถูกยกเลิกไปแล้ว' };
       }
+      if (status === 'checked_in') {
+        return { success: false, error: 'การจองนี้ยืนยันเข้าใช้งานแล้ว ไม่สามารถยกเลิกได้' };
+      }
+
+      // ตรวจสอบว่าเป็นกรณีเกิน 15 นาทีของ Slot ปัจจุบันหรือไม่
+      const [slotH] = rTime.split(':').map(Number);
+      const [y, m, d] = rDate.split('-').map(Number);
+      const slotStart = new Date(y, m - 1, d, slotH, 0, 0);
+      const slotEnd   = new Date(y, m - 1, d, slotH + 1, 0, 0);
+      const fifteenMinsAfter = new Date(slotStart.getTime() + 15 * 60 * 1000);
+
+      const isOverdueUnclaimed = (now >= fifteenMinsAfter && now <= slotEnd && status === 'active');
+
+      if (isOverdueUnclaimed) {
+        // เงื่อนไขพิเศษ: เกิน 15 นาทีแล้วและยังไม่ยืนยัน เพื่อนคนอื่นยกเลิกได้ทันทีโดยไม่ต้องใส่รหัส PIN
+        sheet.getRange(i + 1, statusColIdx + 1).setValue('cancelled');
+
+        const historySheet = ss.getSheetByName(CONFIG.sheets.bookingHistory);
+        if (historySheet) {
+          const logId = historySheet.getLastRow();
+          const nowStr = Utilities.formatDate(now, 'Asia/Bangkok', "yyyy-MM-dd'T'HH:mm:ss");
+          historySheet.appendRow([
+            logId,
+            bookingId,
+            'cancelled_overdue_15m',
+            rDate,
+            rTime,
+            rType,
+            rSids,
+            sidTrim || 'PEER_OVERDUE',
+            nowStr
+          ]);
+        }
+
+        Logger.log(`🗑️ Booking cancelled (Overdue 15m without PIN): ${bookingId} by ${sidTrim || 'peer'}`);
+        return { success: true, message: 'ยกเลิกสิทธิ์เนื่องจากเกิน 15 นาทีแล้วเรียบร้อย' };
+      }
+
+      // กรณีปกติ: ตรวจสอบรหัสนิสิตและ PIN
       const idList = rSids.split(',').map(s => s.trim());
       if (rBy !== sidTrim && !idList.includes(sidTrim)) {
-        return { success: false, error: 'รหัสนิสิตไม่ตรงกับสมาชิกในการจองนี้' };
+        return { success: false, error: 'รหัสนิสิตไม่ตรงกับสมาชิกในการจองนี้ (หากเกิน 15 นาทีแล้วจึงจะสามารถกดยกเลิกแทนได้)' };
       }
 
       // ตรวจสอบรหัส PIN 4 หลัก (ยอมรับ PIN ตรงกัน หรือ Master Admin Passcode 'rxcu')
@@ -998,7 +1040,7 @@ function cancelBooking(bookingId, studentId, pin) {
       const historySheet = ss.getSheetByName(CONFIG.sheets.bookingHistory);
       if (historySheet) {
         const logId = historySheet.getLastRow();
-        const nowStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', "yyyy-MM-dd'T'HH:mm:ss");
+        const nowStr = Utilities.formatDate(now, 'Asia/Bangkok', "yyyy-MM-dd'T'HH:mm:ss");
         historySheet.appendRow([
           logId,
           bookingId,
@@ -1012,7 +1054,7 @@ function cancelBooking(bookingId, studentId, pin) {
         ]);
       }
 
-      Logger.log(`🗑️  Booking cancelled: ${bookingId} by ${sidTrim} (PIN verified)`);
+      Logger.log(`🗑️ Booking cancelled: ${bookingId} by ${sidTrim} (PIN verified)`);
       return { success: true };
     }
 
@@ -1028,14 +1070,14 @@ function cancelBooking(bookingId, studentId, pin) {
 
 /**
  * checkInBooking(bookingId, studentId, pin)
- * ยืนยันเข้าใช้งาน (ต้องใส่รหัส PIN 4 หลักที่ตั้งไว้ตอนจอง)
+ * ยืนยันเข้าใช้งาน (สามารถยืนยันได้ตลอดช่วงเวลาของ Slot นั้นๆ)
  */
 function checkInBooking(bookingId, studentId, pin) {
   const lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
-    const bIdTrim = String(bookingId).trim().toUpperCase();
-    const sidTrim = String(studentId).trim();
+    const bIdTrim = String(bookingId || '').trim().toUpperCase();
+    const sidTrim = String(studentId || '').trim();
     const pinTrim = String(pin || '').trim();
 
     const ss = getSpreadsheet();
@@ -1062,7 +1104,6 @@ function checkInBooking(bookingId, studentId, pin) {
       const rSids       = row[4] ? String(row[4]).trim() : '';
       const rBy         = row[5] ? String(row[5]).trim() : '';
       const rPin        = (pinColIdx !== -1 && row[pinColIdx] !== undefined) ? String(row[pinColIdx]).trim() : '';
-      const bookedAtStr = row[bookedAtColIdx] ? String(row[bookedAtColIdx]).trim() : '';
       const status      = row[statusColIdx] ? String(row[statusColIdx]).trim() : 'active';
 
       if (rId !== bIdTrim) continue;
@@ -1089,26 +1130,12 @@ function checkInBooking(bookingId, studentId, pin) {
       const slotStart = new Date(y, m - 1, d, slotH, 0, 0);
       const slotEnd   = new Date(y, m - 1, d, slotH + 1, 0, 0);
 
-      // คำนวณ Deadline การยืนยันตัวตน (5 นาทีจากเวลาเริ่ม Slot หรือ 5 นาทีจากเวลาที่จอง)
-      let windowEnd = new Date(slotStart.getTime() + 5 * 60 * 1000);
-      if (bookedAtStr) {
-        const bookedAtDate = new Date(bookedAtStr);
-        if (!isNaN(bookedAtDate.getTime())) {
-          const bookedPlus5 = new Date(bookedAtDate.getTime() + 5 * 60 * 1000);
-          if (bookedPlus5 > windowEnd) {
-            windowEnd = bookedPlus5;
-          }
-        }
-      }
-      if (windowEnd > slotEnd) {
-        windowEnd = slotEnd;
-      }
-
-      if (now > windowEnd) {
-        return { success: false, error: 'หมดเวลายืนยัน (เกิน 5 นาทีแล้ว) การจองถูกยกเลิกอัตโนมัติ' };
-      }
+      // ยืนยันได้ตลอดช่วงเวลาของ Slot นั้นๆ
       if (now < slotStart) {
         return { success: false, error: 'ยังไม่ถึงเวลาจอง กรุณารอจนถึงเวลา ' + rTime };
+      }
+      if (now > slotEnd) {
+        return { success: false, error: 'หมดเวลาของรอบนี้แล้ว ไม่สามารถยืนยันย้อนหลังได้' };
       }
 
       const nowStr = Utilities.formatDate(now, 'Asia/Bangkok', "yyyy-MM-dd'T'HH:mm:ss");
@@ -1139,8 +1166,7 @@ function checkInBooking(bookingId, studentId, pin) {
 
 /**
  * autoExpireBookings_()
- * ตรวจสอบและยกเลิก No-Show อัตโนมัติ (ให้เวลายืนยัน 15 นาทีจากเวลาเริ่ม Slot)
- * ป้องกันไม่ให้แตะต้องรายการจองในอนาคตโดยเด็ดขาด
+ * ตรวจสอบและยกเลิก No-Show อัตโนมัติเมื่อพ้นช่วงเวลาของ Slot นั้นๆ แล้วยังไม่มีการกดยืนยัน
  */
 function autoExpireBookings_() {
   try {
@@ -1152,13 +1178,11 @@ function autoExpireBookings_() {
     const data = sheet.getDataRange().getValues();
     const headers = data[0].map(h => String(h).trim().toLowerCase());
     const statusColIdx = headers.findIndex(h => h.includes('status') || h.includes('สถานะ'));
-    const bookedAtColIdx = headers.findIndex(h => h.includes('bookedat') || h.includes('เวลาที่จอง'));
     const dateColIdx = headers.findIndex(h => h === 'date' || h.includes('วัน'));
     const timeColIdx = headers.findIndex(h => h.includes('time') || h.includes('slot') || h.includes('เวลา'));
     const now = new Date();
 
     const actualStatusCol = statusColIdx !== -1 ? statusColIdx : 8;
-    const actualBookedAtCol = bookedAtColIdx !== -1 ? bookedAtColIdx : 7;
     const actualDateCol = dateColIdx !== -1 ? dateColIdx : 1;
     const actualTimeCol = timeColIdx !== -1 ? timeColIdx : 2;
 
@@ -1172,7 +1196,6 @@ function autoExpireBookings_() {
       const tType = row[3] ? String(row[3]).trim() : '';
       const sIds = row[4] ? String(row[4]).trim() : '';
       let status = row[actualStatusCol] ? String(row[actualStatusCol]).trim().toLowerCase() : 'active';
-      const bookedAtStr = (actualBookedAtCol !== -1 && row[actualBookedAtCol]) ? String(row[actualBookedAtCol]).trim() : '';
 
       // หากเป็นการจองส่วนกลาง / Mock exam หรือสถานะยืนยันแล้ว ไม่ต้อง auto-expire
       if (status.includes('mock') || status.includes('central') || status.includes('reserved') || status.includes('confirm') || status === 'checked_in' || status === 'cancelled' || status === 'no_show') {
@@ -1185,27 +1208,10 @@ function autoExpireBookings_() {
       if (isNaN(slotH)) continue;
 
       const [y, m, d] = date.split('-').map(Number);
-      const slotStart = new Date(y, m - 1, d, slotH, 0, 0);
       const slotEnd   = new Date(y, m - 1, d, slotH + 1, 0, 0);
 
-      // ห้าม Auto-expire การจองในอนาคตเด็ดขาด!
-      if (now < slotStart) continue;
-
-      let windowEnd = new Date(slotStart.getTime() + 15 * 60 * 1000);
-      if (bookedAtStr) {
-        const bookedAtDate = new Date(bookedAtStr);
-        if (!isNaN(bookedAtDate.getTime())) {
-          const bookedPlus15 = new Date(bookedAtDate.getTime() + 15 * 60 * 1000);
-          if (bookedPlus15 > windowEnd) {
-            windowEnd = bookedPlus15;
-          }
-        }
-      }
-      if (windowEnd > slotEnd) {
-        windowEnd = slotEnd;
-      }
-
-      if (now > windowEnd) {
+      // Auto-expire เฉพาะเมื่อหมดเวลา Slot แล้วยังไม่ยืนยัน
+      if (now > slotEnd) {
         sheet.getRange(i + 1, actualStatusCol + 1).setValue('no_show');
 
         if (historySheet) {

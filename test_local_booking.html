@@ -555,6 +555,42 @@
       font-size: 0.74rem; font-weight: 700;
       display: flex; align-items: center; gap: 4px;
     }
+    .rc-who {
+      font-size: 0.71rem; font-weight: 600;
+      color: #991b1b;
+      margin-top: 3px;
+      line-height: 1.25;
+      word-break: break-all;
+    }
+    [data-theme="dark"] .rc-who {
+      color: #fca5a5;
+    }
+    .rc-who-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      background: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-right: 3px;
+      display: inline-block;
+    }
+    [data-theme="dark"] .rc-who-tag {
+      background: rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+    }
+    .rc-who-central {
+      background: rgba(124, 58, 237, 0.12);
+      color: #6d28d9;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    [data-theme="dark"] .rc-who-central {
+      background: rgba(168, 85, 247, 0.25);
+      color: #d8b4fe;
+    }
 
     .room-card.state-free {
       background: var(--free-bg); border-color: var(--free-bdr); color: var(--free-txt);
@@ -573,6 +609,17 @@
     @keyframes cip {
       0%,100%{ box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
       50%{ box-shadow: 0 0 8px 2px rgba(234, 88, 12, 0.35); }
+    }
+    .room-card.state-overdue {
+      background: rgba(239, 68, 68, 0.08); border-color: #ef4444; color: #b91c1c;
+      animation: overp 1.5s ease-in-out infinite;
+    }
+    [data-theme="dark"] .room-card.state-overdue {
+      background: rgba(239, 68, 68, 0.18); border-color: #f87171; color: #fca5a5;
+    }
+    @keyframes overp {
+      0%,100%{ box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+      50%{ box-shadow: 0 0 10px 2px rgba(239, 68, 68, 0.4); }
     }
     .rc-countdown {
       font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 0.8rem;
@@ -769,8 +816,8 @@
     <div class="legend-bar">
       <div class="leg-items">
         <div class="leg-it"><div class="leg-dot dot-free"></div> ว่าง</div>
-        <div class="leg-it"><div class="leg-dot dot-ci"></div> รอยืนยัน (5 นาที)</div>
-        <div class="leg-it"><div class="leg-dot dot-full"></div> จองแล้ว</div>
+        <div class="leg-it"><div class="leg-dot dot-ci"></div> รอยืนยัน (ยกเลิกได้หลัง 15 น.)</div>
+        <div class="leg-it"><div class="leg-dot dot-full"></div> ยืนยันแล้ว</div>
         <div class="leg-it"><div class="leg-dot dot-sel"></div> ที่เลือก</div>
       </div>
       <div style="display:flex; align-items:center; gap:8px; font-size:0.74rem; color:var(--txt3); font-weight:600">
@@ -882,22 +929,22 @@
           <div class="rule-item-hdr">
             <div class="rule-badge-wrap">
               <div class="rule-num-badge">4</div>
-              <div class="rule-item-title">ยืนยันเข้าใช้งาน (Check-in)</div>
+              <div class="rule-item-title">ยืนยันเข้าใช้งาน (Check-in) & กฎ 15 นาที</div>
             </div>
-            <span class="rule-chip-tag">ภายใน 5 นาทีแรก</span>
+            <span class="rule-chip-tag">ยืนยันได้ตลอด Slot</span>
           </div>
           <div class="rule-content-list">
             <div class="rule-point">
               <span class="rule-bullet"></span>
-              <div>ต้องกดยืนยันตัวตน <strong>ภายใน 5 นาทีแรก</strong> ของรอบเวลาจอง</div>
+              <div>สามารถกดยืนยันตัวตน (Check-in) <strong>ได้ตลอดช่วงเวลาของ Slot นั้นๆ</strong> โดยใช้รหัสนิสิต + PIN 4 หลัก</div>
             </div>
             <div class="rule-point">
               <span class="rule-bullet"></span>
-              <div>หากไม่ยืนยัน ระบบจะปรับเป็น <strong>No-Show</strong> และปล่อย Slot ว่างให้เพื่อนทันที</div>
+              <div>หากเริ่มรอบมาแล้ว <strong>เกิน 15 นาที</strong> และยังไม่มีการกดยืนยัน <strong>เพื่อนคนอื่นสามารถกดยกเลิก Slot ได้ทันทีโดยไม่ต้องใส่รหัส</strong> เพื่อขอใช้โต๊ะซ้อมต่อ</div>
             </div>
             <div class="rule-point">
               <span class="rule-bullet"></span>
-              <div>หากติดภารกิจกระทันหัน กรุณากดยกเลิกล่วงหน้าเพื่อแบ่งปันสิทธิ์แก่เพื่อน</div>
+              <div>หากยืนยันตัวตนสำเร็จแล้ว สถานะจะเป็นสีแดงเข้ม (ยืนยันแล้ว) บุคคลอื่นจะไม่สามารถกดยกเลิกได้</div>
             </div>
           </div>
         </div>
@@ -1056,43 +1103,57 @@
     </div>
   </div>
 
-  <!-- MODAL 3: CHECK-IN (5 MIN) -->
+  <!-- MODAL 3: CHECK-IN & 15-MIN RULE -->
   <div class="modal-ov" id="ciModal">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modal-hdr">
         <div>
-          <div class="modal-title">⏰ ยืนยันการเข้าใช้งานห้อง</div>
-          <div class="modal-sub">กดยืนยันตัวตนภายใน 5 นาทีแรก</div>
+          <div class="modal-title" id="ciModalTitle">⏰ ยืนยันการเข้าใช้งานห้อง</div>
+          <div class="modal-sub" id="ciModalSub">ยืนยันตัวตนได้ตลอดช่วงเวลาของรอบ</div>
         </div>
         <button class="btn-x" onclick="closeCiModal()">✕</button>
       </div>
 
-      <div style="background:var(--ci-bg); border:1px solid var(--ci-bdr); border-radius:10px; padding:10px; text-align:center; margin-bottom:12px">
-        <div style="font-size:0.75rem; color:var(--ci-txt); font-weight:600">เวลาที่เหลือสำหรับการยืนยัน (หากหมดเวลาจะปล่อย Slot อัตโนมัติ)</div>
-        <div id="ciCdText" style="font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; color:var(--ci-txt)">05:00</div>
+      <!-- Overdue Banner (Shown if > 15 mins passed) -->
+      <div id="ciOverdueBanner" style="display:none; background:rgba(239,68,68,0.12); border:1.5px solid #ef4444; border-radius:10px; padding:12px; margin-bottom:12px; text-align:center">
+        <div style="font-size:0.88rem; font-weight:800; color:#b91c1c; margin-bottom:4px">⚠️ เกิน 15 นาทีแล้วแต่ยังไม่มีการยืนยันเข้าใช้งาน!</div>
+        <div style="font-size:0.75rem; color:#991b1b; line-height:1.4">เพื่อนนิสิตคนอื่นสามารถกดยกเลิก Slot นี้เพื่อขอใช้โต๊ะฝึกซ้อมต่อได้ทันที <strong>โดยไม่ต้องใส่รหัส PIN</strong></div>
+        <button class="btn btn-d" id="btnPeerCancelSlot" style="width:100%; margin-top:10px; height:38px; font-weight:700" onclick="submitPeerCancel()">🔓 ยกเลิก Slot นี้ (สิทธิ์เกิน 15 นาที ไม่ต้องใส่รหัส)</button>
+      </div>
+
+      <!-- Countdown/Status Banner (Shown if <= 15 mins) -->
+      <div id="ciStatusBanner" style="background:var(--ci-bg); border:1px solid var(--ci-bdr); border-radius:10px; padding:10px; text-align:center; margin-bottom:12px">
+        <div style="font-size:0.75rem; color:var(--ci-txt); font-weight:600" id="ciBannerLabel">เวลาที่เหลือสำหรับรักษาสิทธิ์ก่อนที่เพื่อนจะยกเลิกได้ (15 นาทีแรก)</div>
+        <div id="ciCdText" style="font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; color:var(--ci-txt)">15:00</div>
       </div>
 
       <div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:10px; padding:10px; margin-bottom:12px; font-size:0.84rem">
         <div>📅 <strong>วันที่:</strong> <span id="ciDateTxt">—</span></div>
         <div>⏰ <strong>ช่วงเวลา:</strong> <span id="ciTimeTxt">—</span></div>
         <div>📍 <strong>โต๊ะ:</strong> <span id="ciTableTxt">—</span></div>
+        <div style="margin-top:4px">👥 <strong>ผู้จอง:</strong> <span id="ciWhoTxt">—</span></div>
       </div>
 
-      <div class="fg">
-        <label class="fl">รหัสนิสิตของคุณ (10 หลัก) <span>*</span></label>
-        <input type="text" class="fc" id="ciSidInput" placeholder="รหัสนิสิต 10 หลักที่มีชื่อในกลุ่มนี้" maxlength="10">
-        <div class="fe" id="eCiSid">กรุณากรอกรหัสนิสิต 10 หลักในกลุ่มจองนี้</div>
-      </div>
+      <!-- Owner Section: Check-in / Normal Cancel -->
+      <div id="ciOwnerSection" style="border-top:1px dashed var(--bdr); padding-top:10px; margin-top:4px">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--txt2); margin-bottom:8px">สำหรับผู้มีชื่อในการจอง (ยืนยันเข้าใช้งาน หรือขอยกเลิกเอง):</div>
 
-      <div class="fg">
-        <label class="fl">รหัส PIN 4 หลัก (ที่ตั้งไว้ตอนจอง) <span>*</span></label>
-        <input type="password" inputmode="numeric" class="fc" id="ciPinInput" placeholder="••••" maxlength="4" style="font-family:'JetBrains Mono',monospace;letter-spacing:6px;font-size:1.15rem;text-align:center;font-weight:800">
-        <div class="fe" id="eCiPin">กรุณากรอกรหัส PIN 4 หลักให้ถูกต้อง</div>
-      </div>
+        <div class="fg">
+          <label class="fl">รหัสนิสิตของคุณ (10 หลัก) <span>*</span></label>
+          <input type="text" class="fc" id="ciSidInput" placeholder="รหัสนิสิต 10 หลักที่มีชื่อในกลุ่มนี้" maxlength="10">
+          <div class="fe" id="eCiSid">กรุณากรอกรหัสนิสิต 10 หลักในกลุ่มจองนี้</div>
+        </div>
 
-      <div class="btn-row">
-        <button class="btn btn-d" id="btnCiCancelSlot" onclick="submitCiCancel()">ยกเลิก Slot</button>
-        <button class="btn btn-p" id="btnCiConfirmSlot" onclick="submitCiConfirm()">✓ ยืนยันเข้าใช้งาน</button>
+        <div class="fg">
+          <label class="fl">รหัส PIN 4 หลัก (ที่ตั้งไว้ตอนจอง) <span>*</span></label>
+          <input type="password" inputmode="numeric" class="fc" id="ciPinInput" placeholder="••••" maxlength="4" style="font-family:'JetBrains Mono',monospace;letter-spacing:6px;font-size:1.15rem;text-align:center;font-weight:800">
+          <div class="fe" id="eCiPin">กรุณากรอกรหัส PIN 4 หลักให้ถูกต้อง</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-d" id="btnCiCancelSlot" onclick="submitCiCancel()">ยกเลิก Slot (เจ้าของ)</button>
+          <button class="btn btn-p" id="btnCiConfirmSlot" onclick="submitCiConfirm()">✓ ยืนยันเข้าใช้งาน</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1347,22 +1408,38 @@
       return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
     }
 
-    function getCiSecsLeft(ds, slot, entry) {
-      if (!entry || entry.status !== 'active') return 0;
+    function getSlotTimeBounds(ds, slot) {
       var parts = ds.split('-');
       var h = parseInt(slot);
       var slotStart = new Date(+parts[0], +parts[1]-1, +parts[2], h, 0, 0);
-      var windowEnd = new Date(slotStart.getTime() + 5 * 60 * 1000);
-      if (entry.bookedAt) {
-        var bDate = new Date(entry.bookedAt);
-        if (!isNaN(bDate.getTime())) {
-          var bPlus5 = new Date(bDate.getTime() + 5 * 60 * 1000);
-          if (bPlus5 > windowEnd) windowEnd = bPlus5;
-        }
-      }
+      var slotEnd = new Date(+parts[0], +parts[1]-1, +parts[2], h + 1, 0, 0);
+      var fifteenMin = new Date(slotStart.getTime() + 15 * 60 * 1000);
+      return { start: slotStart, end: slotEnd, fifteen: fifteenMin };
+    }
+
+    function isOver15Mins(ds, slot) {
+      var tb = getSlotTimeBounds(ds, slot);
       var now = new Date();
-      if (now < slotStart && Math.abs(now - slotStart) > 5 * 60 * 1000) return 0;
-      return Math.max(0, Math.floor((windowEnd - now) / 1000));
+      return now >= tb.fifteen && now < tb.end;
+    }
+
+    function isCurrentSlot(ds, slot) {
+      var tb = getSlotTimeBounds(ds, slot);
+      var now = new Date();
+      return now >= tb.start && now < tb.end;
+    }
+
+    function get15MinSecsLeft(ds, slot, entry) {
+      if (!entry || entry.status !== 'active') return 0;
+      var tb = getSlotTimeBounds(ds, slot);
+      var now = new Date();
+      if (now < tb.start) return 15 * 60;
+      if (now >= tb.fifteen) return 0;
+      return Math.max(0, Math.floor((tb.fifteen - now) / 1000));
+    }
+
+    function getCiSecsLeft(ds, slot, entry) {
+      return get15MinSecsLeft(ds, slot, entry);
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -1437,6 +1514,7 @@
           isLoadingData = false;
           updateSyncStatus('synced');
           if (data && typeof data === 'object') {
+            bkData = {};
             for (var k in data) {
               if (data.hasOwnProperty(k)) {
                 bkData[k] = data[k];
@@ -1542,27 +1620,61 @@
 
         // Outside Table (3 คน)
         var obEntry = rowData.outside;
-        var obCiLeft = obEntry ? getCiSecsLeft(ds, slot, obEntry) : 0;
-        var obIsCi = obEntry && obEntry.status === 'active' && obCiLeft > 0;
-        var obIsFull = obEntry && !obIsCi;
+        var obIsCur = isCurrentSlot(ds, slot);
+        var obIsOver = isOver15Mins(ds, slot);
+        var obCiLeft = obEntry ? get15MinSecsLeft(ds, slot, obEntry) : 0;
+        var obIsCi = obEntry && obEntry.status === 'active' && obIsCur && !obIsOver;
+        var obIsOverdue = obEntry && obEntry.status === 'active' && obIsOver;
+        var obIsConfirmed = obEntry && (obEntry.status === 'checked_in' || (obEntry.status === 'active' && !obIsCur && !obIsOver));
 
         var obState = 'state-free', obText = '🟢 ว่าง';
+        var obWhoHtml = '';
         if (past) { obState = 'state-past'; obText = '—'; }
         else if (isSelOut) { obState = 'state-selected'; obText = '🔵 ที่เลือก'; }
-        else if (obIsCi) { obState = 'state-ci'; obText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_out">' + fmtCd(obCiLeft) + '</span>'; }
-        else if (obIsFull) { obState = 'state-full'; obText = '🔴 จองแล้ว'; }
+        else if (obIsCi) {
+          obState = 'state-ci';
+          obText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_out">' + fmtCd(obCiLeft) + '</span>';
+          obWhoHtml = formatBookedWho(obEntry);
+        }
+        else if (obIsOverdue) {
+          obState = 'state-overdue';
+          obText = '⚠️ เกิน 15 น. (กดยกเลิกได้)';
+          obWhoHtml = formatBookedWho(obEntry);
+        }
+        else if (obIsConfirmed || (obEntry && obEntry.status === 'active')) {
+          obState = 'state-full';
+          obText = obEntry.status === 'checked_in' ? '🔴 ยืนยันแล้ว' : '🔴 จองแล้ว';
+          obWhoHtml = formatBookedWho(obEntry);
+        }
 
         // Inside Table (6 คน)
         var ibEntry = rowData.inside;
-        var ibCiLeft = ibEntry ? getCiSecsLeft(ds, slot, ibEntry) : 0;
-        var ibIsCi = ibEntry && ibEntry.status === 'active' && ibCiLeft > 0;
-        var ibIsFull = ibEntry && !ibIsCi;
+        var ibIsCur = isCurrentSlot(ds, slot);
+        var ibIsOver = isOver15Mins(ds, slot);
+        var ibCiLeft = ibEntry ? get15MinSecsLeft(ds, slot, ibEntry) : 0;
+        var ibIsCi = ibEntry && ibEntry.status === 'active' && ibIsCur && !ibIsOver;
+        var ibIsOverdue = ibEntry && ibEntry.status === 'active' && ibIsOver;
+        var ibIsConfirmed = ibEntry && (ibEntry.status === 'checked_in' || (ibEntry.status === 'active' && !ibIsCur && !ibIsOver));
 
         var ibState = 'state-free', ibText = '🟢 ว่าง';
+        var ibWhoHtml = '';
         if (past) { ibState = 'state-past'; ibText = '—'; }
         else if (isSelIn) { ibState = 'state-selected'; ibText = '🔵 ที่เลือก'; }
-        else if (ibIsCi) { ibState = 'state-ci'; ibText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_in">' + fmtCd(ibCiLeft) + '</span>'; }
-        else if (ibIsFull) { ibState = 'state-full'; ibText = '🔴 จองแล้ว'; }
+        else if (ibIsCi) {
+          ibState = 'state-ci';
+          ibText = '🟠 รอยืนยัน <span class="rc-countdown" data-key="' + key + '_in">' + fmtCd(ibCiLeft) + '</span>';
+          ibWhoHtml = formatBookedWho(ibEntry);
+        }
+        else if (ibIsOverdue) {
+          ibState = 'state-overdue';
+          ibText = '⚠️ เกิน 15 น. (กดยกเลิกได้)';
+          ibWhoHtml = formatBookedWho(ibEntry);
+        }
+        else if (ibIsConfirmed || (ibEntry && ibEntry.status === 'active')) {
+          ibState = 'state-full';
+          ibText = ibEntry.status === 'checked_in' ? '🔴 ยืนยันแล้ว' : '🔴 จองแล้ว';
+          ibWhoHtml = formatBookedWho(ibEntry);
+        }
 
         html += '<div class="' + rowCls + '">';
         
@@ -1574,13 +1686,19 @@
 
         // Outside Table (3 คน)
         html += '  <div class="room-card ' + obState + '" onclick="onRoomCardClick(\'' + slot + '\', \'outside\', event)">';
-        html += '    <div class="rc-title"><span class="rc-tag out">นอก</span> โต๊ะกลมนอก (3 ที่นั่ง)</div>';
+        html += '    <div class="rc-left">';
+        html += '      <div class="rc-title"><span class="rc-tag out">นอก</span> โต๊ะกลมนอก (3 ที่นั่ง)</div>';
+        if (obWhoHtml) html += '      <div class="rc-who">' + obWhoHtml + '</div>';
+        html += '    </div>';
         html += '    <div class="rc-status">' + obText + '</div>';
         html += '  </div>';
 
         // Inside Table (6 คน)
         html += '  <div class="room-card ' + ibState + '" onclick="onRoomCardClick(\'' + slot + '\', \'inside\', event)">';
-        html += '    <div class="rc-title"><span class="rc-tag in">ใน</span> โต๊ะในห้อง (6 ที่นั่ง)</div>';
+        html += '    <div class="rc-left">';
+        html += '      <div class="rc-title"><span class="rc-tag in">ใน</span> โต๊ะในห้อง (6 ที่นั่ง)</div>';
+        if (ibWhoHtml) html += '      <div class="rc-who">' + ibWhoHtml + '</div>';
+        html += '    </div>';
         html += '    <div class="rc-status">' + ibText + '</div>';
         html += '  </div>';
 
@@ -1588,6 +1706,39 @@
       }
 
       cont.innerHTML = html;
+    }
+
+    function formatBookedWho(entry) {
+      if (!entry) return '';
+      var ids = entry.studentIds || entry.ids || [];
+      if (!Array.isArray(ids)) ids = [String(ids)];
+      if (ids.length === 0) return '';
+
+      // เช็คการจองส่วนกลาง / Mock Exam
+      var first = String(ids[0] || '').trim();
+      var isCentral = first.includes('Mock') || first.includes('ส่วนกลาง') || first.includes('สอบ') || first.includes('จัดสอบ') || first.includes('กิจกรรม');
+      if (isCentral) {
+        return '<span class="rc-who-central">🏛️ ' + escapeHtml(first) + '</span>';
+      }
+
+      // แสดงรหัสนิสิตผู้จอง
+      var html = '<span style="opacity:0.85; margin-right:2px;">👤</span>';
+      ids.forEach(function(sid) {
+        var s = String(sid).trim();
+        if (s) {
+          html += '<span class="rc-who-tag">' + escapeHtml(s) + '</span>';
+        }
+      });
+      return html;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -1602,15 +1753,15 @@
 
       if (isPastSlot(selectedDate, slot)) return;
 
-      var ciLeft = entry ? getCiSecsLeft(ds, slot, entry) : 0;
-      if (entry && entry.status === 'active' && ciLeft > 0) {
+      if (entry && entry.status === 'active' && isCurrentSlot(ds, slot)) {
         openCiModal(ds, slot, type, entry);
         return;
       }
 
       if (entry) {
-        var ids = (entry.studentIds || []).join(', ');
-        toast('ℹ️ ' + (type === 'outside' ? 'โต๊ะกลมนอก' : 'โต๊ะในห้อง') + ' มีผู้จองแล้ว (' + ids + ')', 'info');
+        var ids = (entry.studentIds || entry.ids || []).join(', ');
+        var statusTxt = entry.status === 'checked_in' ? 'ยืนยันเข้าใช้งานแล้ว' : 'จองแล้ว';
+        toast('ℹ️ ' + (type === 'outside' ? 'โต๊ะกลมนอก' : 'โต๊ะในห้อง') + ' (' + statusTxt + ' โดย ' + ids + ')', 'info');
         return;
       }
 
@@ -1815,7 +1966,7 @@
             closeBookModal();
             clearSelection();
             renderAll();
-            toast('🎉 จองสำเร็จ! ยืนยันตัวตนใน 5 นาทีแรกของเวลาจอง', 'success');
+            toast('🎉 จองสำเร็จ! สามารถกดยืนยันตัวตนได้ตลอดช่วงเวลาจอง', 'success');
             loadData();
           } else {
             toast('❌ ' + ((res && res.error) || 'การจองไม่สำเร็จ'), 'error');
@@ -1991,7 +2142,7 @@
             };
             closeQuickBookModal();
             renderAll();
-            toast('🎉 จองสำเร็จ! ยืนยันตัวตนใน 5 นาทีแรกของเวลาจอง', 'success');
+            toast('🎉 จองสำเร็จ! สามารถกดยืนยันตัวตนได้ตลอดช่วงเวลาจอง', 'success');
             loadData();
           } else {
             toast('❌ ' + ((res && res.error) || 'จองไม่สำเร็จ'), 'error');
@@ -2005,29 +2156,78 @@
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // CHECK-IN & CANCEL (5 MIN)
+    // CHECK-IN & 15-MIN RULE CANCELLATION
     // ════════════════════════════════════════════════════════════════════
     function openCiModal(ds, slot, type, entry) {
       ciCurrentEntry = { ds: ds, slot: slot, type: type, entry: entry };
       var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
       var tName = type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)';
+      var ids = (entry.studentIds || entry.ids || []).join(', ');
 
       document.getElementById('ciDateTxt').textContent = formatThaiFull(selectedDate);
       document.getElementById('ciTimeTxt').textContent = slot + ' - ' + slotEnd + ' น.';
       document.getElementById('ciTableTxt').textContent = tName;
+      document.getElementById('ciWhoTxt').textContent = ids || 'ไม่ระบุ';
       document.getElementById('ciSidInput').value = '';
       document.getElementById('ciPinInput').value = '';
 
       ['eCiSid','eCiPin'].forEach(function(id) { document.getElementById(id).classList.remove('vis'); });
 
-      var s = getCiSecsLeft(ds, slot, entry);
-      document.getElementById('ciCdText').textContent = fmtCd(s);
+      var isOver = isOver15Mins(ds, slot);
+      var overdueBanner = document.getElementById('ciOverdueBanner');
+      var statusBanner = document.getElementById('ciStatusBanner');
+
+      if (isOver) {
+        if (overdueBanner) overdueBanner.style.display = 'block';
+        if (statusBanner) statusBanner.style.display = 'none';
+        document.getElementById('ciModalTitle').textContent = '⚠️ แจ้งเตือน: เกิน 15 นาทีแล้ว';
+        document.getElementById('ciModalSub').textContent = 'เพื่อนสามารถกดยกเลิกสิทธิ์เพื่อซ้อมต่อได้ทันที';
+      } else {
+        if (overdueBanner) overdueBanner.style.display = 'none';
+        if (statusBanner) statusBanner.style.display = 'block';
+        document.getElementById('ciModalTitle').textContent = '⏰ ยืนยันการเข้าใช้งานห้อง';
+        document.getElementById('ciModalSub').textContent = 'ยืนยันตัวตนได้ตลอดช่วงเวลาของรอบนี้';
+        var s = get15MinSecsLeft(ds, slot, entry);
+        document.getElementById('ciCdText').textContent = fmtCd(s);
+      }
+
       document.getElementById('ciModal').classList.add('active');
     }
 
     function closeCiModal() {
       document.getElementById('ciModal').classList.remove('active');
       ciCurrentEntry = null;
+    }
+
+    function submitPeerCancel() {
+      if (!ciCurrentEntry) return;
+      if (!confirm('ยืนยันยกเลิก Slot นี้เพื่อขอใช้พื้นที่ซ้อมต่อใช่หรือไม่?\n(เนื่องจากเริ่มรอบมาเกิน 15 นาทีแล้วโดยยังไม่มีการยืนยันเข้าใช้งาน)')) {
+        return;
+      }
+
+      var btn = document.getElementById('btnPeerCancelSlot');
+      if (btn) { btn.disabled = true; btn.textContent = 'กำลังยกเลิก…'; }
+
+      callGasApi('cancelBooking', {
+        bookingId: ciCurrentEntry.entry.bookingId,
+        studentId: 'PEER_CANCEL',
+        pin: ''
+      }, true,
+        function(res) {
+          if (btn) { btn.disabled = false; btn.textContent = '🔓 ยกเลิก Slot นี้ (สิทธิ์เกิน 15 นาที ไม่ต้องใส่รหัส)'; }
+          if (res && res.success) {
+            closeCiModal();
+            toast('🎉 ยกเลิกสำเร็จ! พื้นที่เปิดว่างให้สามารถกดจองต่อได้ทันที', 'success');
+            loadData();
+          } else {
+            toast('❌ ' + ((res && res.error) || 'ยกเลิกไม่สำเร็จ'), 'error');
+          }
+        },
+        function(err) {
+          if (btn) { btn.disabled = false; btn.textContent = '🔓 ยกเลิก Slot นี้ (สิทธิ์เกิน 15 นาที ไม่ต้องใส่รหัส)'; }
+          toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        }
+      );
     }
 
     function submitCiConfirm() {
@@ -2078,7 +2278,7 @@
 
       callGasApi('cancelBooking', { bookingId: ciCurrentEntry.entry.bookingId, studentId: sid, pin: pin }, true,
         function(res) {
-          btn.disabled = false; btn.textContent = 'ยกเลิก Slot';
+          btn.disabled = false; btn.textContent = 'ยกเลิก Slot (เจ้าของ)';
           if (res && res.success) {
             closeCiModal();
             toast('✅ ยกเลิกสำเร็จ คืนพื้นที่ให้เพื่อนเรียบร้อย', 'success');
@@ -2088,7 +2288,7 @@
           }
         },
         function(err) {
-          btn.disabled = false; btn.textContent = 'ยกเลิก Slot';
+          btn.disabled = false; btn.textContent = 'ยกเลิก Slot (เจ้าของ)';
           toast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
         }
       );
@@ -2305,6 +2505,8 @@
       if (tickerInterval) clearInterval(tickerInterval);
       tickerInterval = setInterval(function() {
         var els = document.querySelectorAll('.rc-countdown');
+        var needsRefresh = false;
+
         for (var i = 0; i < els.length; i++) {
           var el = els[i];
           var key = el.dataset.key;
@@ -2312,18 +2514,31 @@
           var p = key.split('_');
           var row = bkData[p[0] + '_' + p[1]] || {};
           var entry = row[p[2] === 'out' ? 'outside' : 'inside'];
-          var s = getCiSecsLeft(p[0], p[1], entry);
+          var s = get15MinSecsLeft(p[0], p[1], entry);
           el.textContent = fmtCd(s);
           if (s === 0) {
-            clearInterval(tickerInterval);
-            loadData();
+            needsRefresh = true;
           }
         }
 
+        if (needsRefresh) {
+          renderDaySlots();
+        }
+
         if (ciCurrentEntry) {
-          var s2 = getCiSecsLeft(ciCurrentEntry.ds, ciCurrentEntry.slot, ciCurrentEntry.entry);
-          document.getElementById('ciCdText').textContent = fmtCd(s2);
-          if (s2 === 0) closeCiModal();
+          var isOver = isOver15Mins(ciCurrentEntry.ds, ciCurrentEntry.slot);
+          var overdueBanner = document.getElementById('ciOverdueBanner');
+          var statusBanner = document.getElementById('ciStatusBanner');
+          if (isOver) {
+            if (overdueBanner) overdueBanner.style.display = 'block';
+            if (statusBanner) statusBanner.style.display = 'none';
+            document.getElementById('ciModalTitle').textContent = '⚠️ แจ้งเตือน: เกิน 15 นาทีแล้ว';
+            document.getElementById('ciModalSub').textContent = 'เพื่อนสามารถกดยกเลิกสิทธิ์เพื่อซ้อมต่อได้ทันที';
+          } else {
+            var s2 = get15MinSecsLeft(ciCurrentEntry.ds, ciCurrentEntry.slot, ciCurrentEntry.entry);
+            var cdEl = document.getElementById('ciCdText');
+            if (cdEl) cdEl.textContent = fmtCd(s2);
+          }
         }
       }, 1000);
     }
