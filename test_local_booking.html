@@ -1164,7 +1164,7 @@
       <div class="modal-hdr">
         <div>
           <div class="modal-title">📋 ตรวจสอบการจองของฉัน</div>
-          <div class="modal-sub">กรอกรหัสนิสิตเพื่อดูประวัติ หรือกดยกเลิก</div>
+          <div class="modal-sub">รายการจองปัจจุบันและอนาคต (รอยืนยัน / ยืนยันแล้ว) หรือกดยกเลิก</div>
         </div>
         <button class="btn-x" onclick="closeMyBookings()">✕</button>
       </div>
@@ -1362,10 +1362,18 @@
         onSuccess({ success: true });
       } else if (action === 'getMyBookings') {
         var arr = [];
+        var now = new Date();
         for (var k2 in MOCK_DB.bookings) {
           ['outside','inside'].forEach(function(t) {
             var ent = MOCK_DB.bookings[k2][t];
-            if (ent && ent.studentIds && ent.studentIds.indexOf(data.studentId) >= 0) arr.push(ent);
+            if (ent && ent.studentIds && ent.studentIds.indexOf(data.studentId) >= 0) {
+              var parts = (ent.date || '').split('-');
+              var slotH = parseInt(ent.timeSlot || '0');
+              var slotEnd = new Date(+parts[0], +parts[1]-1, +parts[2], slotH + 1, 0, 0);
+              if (now < slotEnd && ent.status !== 'cancelled' && ent.status !== 'no_show') {
+                arr.push(ent);
+              }
+            }
           });
         }
         onSuccess(arr);
@@ -2354,15 +2362,49 @@
       callGasApi('getMyBookings', { studentId: sid }, false,
         function(bookings) {
           if (!bookings || bookings.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt3)">🎉 ไม่พบรายการจองของรหัส ' + sid + '</div>';
+            listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt3)">🎉 ไม่พบรายการจองปัจจุบันหรืออนาคตของรหัส ' + sid + '</div>';
             return;
           }
 
-          var html = '';
+          // กรองซ้ำที่ฝั่ง Client อีกชั้นเพื่อความแม่นยำ
+          var now = new Date();
+          var activeBookings = [];
+          var pastBookings = [];
+
           for (var i = 0; i < bookings.length; i++) {
             var b = bookings[i];
+            var parts = (b.date || '').split('-');
+            var slotH = parseInt(b.timeSlot || '0');
+            var slotEnd = new Date(+parts[0], +parts[1]-1, +parts[2], slotH + 1, 0, 0);
+            if (now >= slotEnd || b.isPast) {
+              pastBookings.push(b);
+            } else {
+              activeBookings.push(b);
+            }
+          }
+
+          if (activeBookings.length === 0) {
+            var emptyHtml = '<div style="text-align:center;padding:20px;color:var(--txt3)">🎉 ไม่มีรายการจองที่รอยืนยันหรือกำลังจะมาถึงของรหัส ' + sid + '</div>';
+            if (pastBookings.length > 0) {
+              emptyHtml += '<div style="text-align:center;font-size:0.75rem;color:var(--txt3);margin-top:4px">(มีประวัติเก่าที่ผ่านพ้นเวลาไปแล้ว ' + pastBookings.length + ' รายการ)</div>';
+            }
+            listEl.innerHTML = emptyHtml;
+            return;
+          }
+
+          var html = '<div style="font-size:0.78rem;font-weight:700;color:var(--primary);margin-bottom:8px">📅 รายการจองปัจจุบัน / กำลังจะมาถึง (' + activeBookings.length + ' รายการ):</div>';
+          for (var j = 0; j < activeBookings.length; j++) {
+            var b = activeBookings[j];
             var tName = b.tableType === 'both' ? 'ทั้งสองโต๊ะ (9 ที่นั่ง)' : (b.tableType === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)');
             var statusTxt = b.status === 'checked_in' ? '<span style="color:var(--free-txt);font-weight:700">✓ ยืนยันแล้ว</span>' : '<span style="color:var(--ci-txt);font-weight:700">รอยืนยัน</span>';
+
+            // รายชื่อเพื่อนพร้อมชื่อเล่น
+            var whoTxt = '';
+            if (b.students && b.students.length > 0) {
+              whoTxt = b.students.map(function(s) { return s.label || s.studentId; }).join(', ');
+            } else {
+              whoTxt = (b.studentIds || []).join(', ');
+            }
 
             html += '<div style="background:var(--surf2); border:1px solid var(--bdr); border-radius:10px; padding:10px; margin-bottom:8px">';
             html += '  <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.86rem">';
@@ -2370,7 +2412,7 @@
             html += '    <span>' + tName + '</span>';
             html += '  </div>';
             html += '  <div style="font-size:0.76rem; color:var(--txt2); margin-top:3px">';
-            html += '    <div>กลุ่ม: ' + (b.studentIds || []).join(', ') + '</div>';
+            html += '    <div>กลุ่ม: ' + escapeHtml(whoTxt) + '</div>';
             html += '    <div>สถานะ: ' + statusTxt + '</div>';
             html += '  </div>';
             html += '  <div style="display:flex; justify-content:flex-end; margin-top:6px">';
@@ -2378,6 +2420,7 @@
             html += '  </div>';
             html += '</div>';
           }
+
           listEl.innerHTML = html;
         },
         function(err) {

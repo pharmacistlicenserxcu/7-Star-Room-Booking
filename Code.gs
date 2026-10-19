@@ -647,6 +647,50 @@ function getMyBookings(studentId) {
     const bookedAtColIdx  = headers.indexOf('bookedAt') !== -1 ? headers.indexOf('bookedAt') : 7;
     const statusColIdx    = headers.indexOf('status') !== -1 ? headers.indexOf('status') : 8;
     const checkedInColIdx = headers.indexOf('checkedInAt') !== -1 ? headers.indexOf('checkedInAt') : 9;
+
+    // โหลดตารางชื่อเล่นนิสิตจาก Student Data เพื่อแสดงผล (รหัสนิสิต (ชื่อเล่น))
+    const studentSheet = findStudentSheet_(ss);
+    const studentNickMap = {};
+    if (studentSheet && studentSheet.getLastRow() > 1) {
+      const sData = studentSheet.getDataRange().getValues();
+      const sHeaders = sData[0].map(h => String(h).trim().toLowerCase());
+      let sIdCol = sHeaders.findIndex(h => h.includes('id') || h.includes('รหัส') || h.includes('student'));
+      if (sIdCol === -1) sIdCol = 0;
+
+      let sNameCols = [];
+      for (let sc = 0; sc < sHeaders.length; sc++) {
+        const sh = sHeaders[sc];
+        if (sc !== sIdCol && (sh.includes('name') || sh.includes('ชื่อ') || sh.includes('first') || sh.includes('last') || sh.includes('สกุล') || sh.includes('prefix') || sh.includes('คำนำหน้า'))) {
+          sNameCols.push(sc);
+        }
+      }
+
+      for (let si = 1; si < sData.length; si++) {
+        const sRow = sData[si];
+        const sVal = String(sRow[sIdCol] || '').trim();
+        if (!sVal) continue;
+        let fullName = '';
+        if (sNameCols.length > 0) {
+          fullName = sNameCols.map(c => String(sRow[c] || '').trim()).filter(Boolean).join(' ');
+        } else {
+          fullName = String(sRow[1] || '').trim();
+        }
+        const tokens = fullName.split(/\s+/).filter(Boolean);
+        let nick = '';
+        if (tokens.length >= 4) {
+          nick = tokens[tokens.length - 1];
+        } else if (tokens.length === 3 && (tokens[0].startsWith('นาย') || tokens[0].startsWith('นาง') || tokens[0].startsWith('น.ส.'))) {
+          nick = '';
+        } else if (tokens.length >= 3) {
+          nick = tokens[tokens.length - 1];
+        } else if (tokens.length === 2 && !tokens[0].startsWith('นาย') && !tokens[0].startsWith('นาง') && !tokens[0].startsWith('น.ส.')) {
+          nick = tokens[1];
+        }
+        if (nick) studentNickMap[sVal] = nick;
+      }
+    }
+
+    const now = new Date();
     const list = [];
 
     for (let i = 1; i < data.length; i++) {
@@ -663,18 +707,40 @@ function getMyBookings(studentId) {
 
       if (!bId || status === 'cancelled' || status === 'no_show' || !date || !time) continue;
 
+      // ตรวจสอบว่าช่วงเวลาผ่านพ้นไปแล้วหรือไม่ (slot สิ้นสุดที่ slotH + 1:00)
+      const [slotH] = time.split(':').map(Number);
+      const [y, m, d] = date.split('-').map(Number);
+      const slotEnd = new Date(y, m - 1, d, slotH + 1, 0, 0);
+      const isPast = now >= slotEnd;
+
+      // ไม่แสดงการจองที่วันและเวลาผ่านพ้นไปแล้ว (แสดงเฉพาะปัจจุบันที่ยังไม่หมดเวลา และอนาคต)
+      if (isPast) continue;
+
       const idList = sIds.split(',').map(s => s.trim());
       if (idList.includes(sidTrim) || bookedBy === sidTrim) {
+        const studentDetails = idList.map(sid => {
+          const cleanSid = String(sid).trim();
+          const nick = studentNickMap[cleanSid] || '';
+          return {
+            studentId: cleanSid,
+            nickname: nick,
+            label: nick ? `${cleanSid} (${nick})` : cleanSid
+          };
+        });
+
         list.push({
           bookingId: bId,
           date: date,
           timeSlot: time,
           tableType: tType,
           studentIds: idList,
+          students: studentDetails,
           bookedBy: bookedBy,
           bookedAt: bookedAt,
           status: status,
-          checkedInAt: checkedInAt
+          checkedInAt: checkedInAt,
+          isPast: false,
+          canCancel: true
         });
       }
     }
