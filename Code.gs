@@ -501,6 +501,53 @@ function getBookingsForWeek(weekStartDate) {
     if (statusColIdx === -1) statusColIdx = 8;
     if (checkedInColIdx === -1) checkedInColIdx = 9;
 
+    // โหลดตารางชื่อเล่นนิสิตจาก Student Data เพื่อแสดงผล (รหัสนิสิต (ชื่อเล่น))
+    const studentSheet = findStudentSheet_(ss);
+    const studentNickMap = {};
+    if (studentSheet && studentSheet.getLastRow() > 1) {
+      const sData = studentSheet.getDataRange().getValues();
+      const sHeaders = sData[0].map(h => String(h).trim().toLowerCase());
+      let sIdCol = sHeaders.findIndex(h => h.includes('id') || h.includes('รหัส') || h.includes('student'));
+      if (sIdCol === -1) sIdCol = 0;
+
+      let sNameCols = [];
+      for (let sc = 0; sc < sHeaders.length; sc++) {
+        const sh = sHeaders[sc];
+        if (sc !== sIdCol && (sh.includes('name') || sh.includes('ชื่อ') || sh.includes('first') || sh.includes('last') || sh.includes('สกุล') || sh.includes('prefix') || sh.includes('คำนำหน้า'))) {
+          sNameCols.push(sc);
+        }
+      }
+
+      for (let si = 1; si < sData.length; si++) {
+        const sRow = sData[si];
+        const sidVal = String(sRow[sIdCol] || '').trim();
+        if (!sidVal) continue;
+        
+        // ดึงชื่อเต็มเฉพาะคอลัมน์ชื่อ-สกุล
+        let fullName = '';
+        if (sNameCols.length > 0) {
+          fullName = sNameCols.map(c => String(sRow[c] || '').trim()).filter(Boolean).join(' ');
+        } else {
+          fullName = String(sRow[1] || '').trim();
+        }
+        const tokens = fullName.split(/\s+/).filter(Boolean);
+        let nick = '';
+        if (tokens.length >= 4) {
+          nick = tokens[tokens.length - 1]; // เช่น นาย ธนดล นารีคำ แม็กนั่ม -> แม็กนั่ม
+        } else if (tokens.length === 3 && (tokens[0].startsWith('นาย') || tokens[0].startsWith('นาง') || tokens[0].startsWith('น.ส.'))) {
+          // คำนำหน้า + ชื่อ + สกุล (ไม่มีชื่อเล่น)
+          nick = '';
+        } else if (tokens.length >= 3) {
+          nick = tokens[tokens.length - 1];
+        } else if (tokens.length === 2 && !tokens[0].startsWith('นาย') && !tokens[0].startsWith('นาง') && !tokens[0].startsWith('น.ส.')) {
+          nick = tokens[1];
+        }
+        if (nick) {
+          studentNickMap[sidVal] = nick;
+        }
+      }
+    }
+
     const result  = {};
 
     for (let i = 1; i < data.length; i++) {
@@ -544,7 +591,26 @@ function getBookingsForWeek(weekStartDate) {
       if (!result[key]) result[key] = { outside: null, inside: null };
 
       const idList = sIds ? sIds.split(',').map(s => s.trim()).filter(Boolean) : ['ส่วนกลาง / Mock Exam'];
-      const entry = { bookingId: bId, ids: idList, status, bookedAt, checkedInAt };
+      
+      // แปลงรายการรหัสนิสิตพร้อมชื่อเล่น
+      const studentDetails = idList.map(sid => {
+        const cleanSid = String(sid).trim();
+        const nick = studentNickMap[cleanSid] || '';
+        return {
+          studentId: cleanSid,
+          nickname: nick,
+          label: nick ? `${cleanSid} (${nick})` : cleanSid
+        };
+      });
+
+      const entry = {
+        bookingId: bId,
+        ids: idList,
+        students: studentDetails,
+        status,
+        bookedAt,
+        checkedInAt
+      };
 
       if (isOutside) result[key].outside = entry;
       if (isInside)  result[key].inside  = entry;

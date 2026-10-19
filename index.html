@@ -1737,14 +1737,23 @@
         return '<span class="rc-who-central">🏛️ ' + escapeHtml(first) + '</span>';
       }
 
-      // แสดงรหัสนิสิตผู้จอง
+      // แสดงรหัสนิสิต (ชื่อเล่น)
       var html = '<span style="opacity:0.85; margin-right:2px;">👤</span>';
-      ids.forEach(function(sid) {
-        var s = String(sid).trim();
-        if (s) {
-          html += '<span class="rc-who-tag">' + escapeHtml(s) + '</span>';
-        }
-      });
+      if (entry.students && entry.students.length > 0) {
+        entry.students.forEach(function(st) {
+          var lbl = st.label || (st.nickname ? st.studentId + ' (' + st.nickname + ')' : st.studentId);
+          if (lbl) {
+            html += '<span class="rc-who-tag">' + escapeHtml(lbl) + '</span>';
+          }
+        });
+      } else {
+        ids.forEach(function(sid) {
+          var s = String(sid).trim();
+          if (s) {
+            html += '<span class="rc-who-tag">' + escapeHtml(s) + '</span>';
+          }
+        });
+      }
       return html;
     }
 
@@ -1775,9 +1784,14 @@
       }
 
       if (entry) {
-        var ids = (entry.studentIds || entry.ids || []).join(', ');
+        var whoTxt = '';
+        if (entry.students && entry.students.length > 0) {
+          whoTxt = entry.students.map(function(s) { return s.label || s.studentId; }).join(', ');
+        } else {
+          whoTxt = (entry.studentIds || entry.ids || []).join(', ');
+        }
         var statusTxt = entry.status === 'checked_in' ? 'ยืนยันเข้าใช้งานแล้ว' : 'จองแล้ว';
-        toast('ℹ️ ' + (type === 'outside' ? 'โต๊ะกลมนอก' : 'โต๊ะในห้อง') + ' (' + statusTxt + ' โดย ' + ids + ')', 'info');
+        toast('ℹ️ ' + (type === 'outside' ? 'โต๊ะกลมนอก' : 'โต๊ะในห้อง') + ' (' + statusTxt + ' โดย ' + whoTxt + ')', 'info');
         return;
       }
 
@@ -2178,12 +2192,17 @@
       ciCurrentEntry = { ds: ds, slot: slot, type: type, entry: entry };
       var slotEnd = ('0' + (parseInt(slot) + 1)).slice(-2) + ':00';
       var tName = type === 'outside' ? 'โต๊ะกลมนอก (3 ที่นั่ง)' : 'โต๊ะในห้อง (6 ที่นั่ง)';
-      var ids = (entry.studentIds || entry.ids || []).join(', ');
+      var whoTxt = '';
+      if (entry.students && entry.students.length > 0) {
+        whoTxt = entry.students.map(function(s) { return s.label || s.studentId; }).join(', ');
+      } else {
+        whoTxt = (entry.studentIds || entry.ids || []).join(', ');
+      }
 
       document.getElementById('ciDateTxt').textContent = formatThaiFull(selectedDate);
       document.getElementById('ciTimeTxt').textContent = slot + ' - ' + slotEnd + ' น.';
       document.getElementById('ciTableTxt').textContent = tName;
-      document.getElementById('ciWhoTxt').textContent = ids || 'ไม่ระบุ';
+      document.getElementById('ciWhoTxt').textContent = whoTxt || 'ไม่ระบุ';
       document.getElementById('ciSidInput').value = '';
       document.getElementById('ciPinInput').value = '';
 
