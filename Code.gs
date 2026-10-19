@@ -681,10 +681,11 @@ function createBooking(payload) {
       };
     }
 
-    const { date, timeSlot, tableType, studentIds, bookedBy, pin } = payload;
+    const { date, timeSlot, tableType, studentIds, pin } = payload;
     const cleanDate = _normalizeDateStr(date);
     const cleanTime = _normalizeTimeStr(timeSlot);
     const cleanPin  = String(pin || '').trim();
+    const bookedBy  = String(payload.bookedBy || (Array.isArray(studentIds) && studentIds[0]) || '').trim();
 
     if (!cleanDate || !cleanTime || !tableType || !studentIds || !bookedBy) {
       return { success: false, error: 'ข้อมูลไม่ครบถ้วน กรุณากรอกให้ครบ' };

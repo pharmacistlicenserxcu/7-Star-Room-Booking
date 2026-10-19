@@ -1794,6 +1794,7 @@
         timeSlot: activeSelection.slot,
         tableType: activeSelection.type,
         studentIds: [s1, s2],
+        bookedBy: s1,
         pin: pin
       };
 
@@ -1971,7 +1972,7 @@
       btn.disabled = true; btn.textContent = 'กำลังบันทึก…';
 
       var payload = {
-        date: d, timeSlot: s, tableType: t, studentIds: [s1, s2], pin: pin
+        date: d, timeSlot: s, tableType: t, studentIds: [s1, s2], bookedBy: s1, pin: pin
       };
 
       callGasApi('createBooking', payload, true,
